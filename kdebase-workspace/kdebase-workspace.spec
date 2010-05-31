@@ -1,4 +1,4 @@
-%define rel 1
+%define rel 2
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %define _unpackaged_files_terminate_build 0
@@ -77,6 +77,9 @@ Requires: xorg-x11-apps
 Requires: xorg-x11-utils
 Requires: xorg-x11-server-utils
 
+
+Provides: kdebase-workspace = %{version}-%{release}
+
 %define default_face_icon default1.png
 
 %description
@@ -117,8 +120,10 @@ KDM graphical login screen for Qubes.
 %package -n ksysguardd
 Summary: Performance monitor daemon
 Group:   System Environment/Daemons
+Provides: ksysguardd = %{version}-%{release}
 %description -n ksysguardd
 %{summary}.
+
 
 %package -n oxygen-cursor-themes
 Summary: Oxygen cursor themes

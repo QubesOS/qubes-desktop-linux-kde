@@ -1,4 +1,4 @@
-%define rel 1
+%define rel 3
 
 %define _unpackaged_files_terminate_build 0
 
@@ -22,6 +22,8 @@ Patch100: kdebase-runtime-4.4.3-qubes-cleanup.patch
 ###############################################################
 
 Provides:   kdebase4-runtime = %{version}-%{release}
+Provides:   kdebase-runtime = %{version}-%{release}
+Provides:   kdebase-runtime = %{version}
 
 # knotify4 provides dbus service org.freedesktop.Notifications too 
 Provides:   desktop-notification-daemon
@@ -68,7 +70,7 @@ Requires: %{name} = %{version}-%{release}
 %package flags
 Summary: Geopolitical flags
 Group: User Interface/Desktops
-Requires: %{name} = %{version}-%{release}
+Requires: %{name} = %{version}
 BuildArch: noarch
 %description flags
 %{summary}.

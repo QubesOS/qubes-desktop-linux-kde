@@ -1,6 +1,6 @@
 # This is a meta package that makes installing all KDE components easy
 
-%define rel 2
+%define rel 4
 
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
@@ -27,6 +27,7 @@ Requires: kdm >= %{version}
 Requires: ksysguardd
 Requires: oxygen-cursor-themes
 Requires: oxygen-icon-theme
+Requires: kdemultimedia
 
 # other 3rd party packages that are useful in Dom0...
 
@@ -35,7 +36,8 @@ Requires: dejavu-sans-mono-fonts
 Requires: dejavu-sans-fonts
 
 # This is for people who don't use NetVM (i.e. don't have VT-d hardware)
-Requires: knetworkmanager
+# This should be left to the user IMO
+#Requires: knetworkmanager
 
 %description
 %{summary}.

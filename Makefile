@@ -1,5 +1,5 @@
 default: help
-SUBDIRS := kde-filesystem kde-settings kdelibs kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0
+SUBDIRS := kde-filesystem kde-settings kdelibs kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme kdemultimedia qubes-kde-dom0
 
 .PHONY: verify-sources get-sources clean-sources clean
 

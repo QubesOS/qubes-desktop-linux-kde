@@ -1,0 +1,54 @@
+--- kdemultimedia-4.4.3-orig/CMakeLists.txt	2010-01-31 20:32:31.000000000 +0100
++++ kdemultimedia-4.4.3/CMakeLists.txt	2010-05-31 22:53:02.980065070 +0200
+@@ -12,50 +12,18 @@ set(PULSEAUDIO_MINIMUM_VERSION "0.9.12")
+ macro_optional_find_package(PulseAudio)
+ macro_log_feature(PULSEAUDIO_FOUND "PulseAudio" "PulseAudio Audio Server" "http://www.pulseaudio.org/" FALSE "0.9.12" "libpulse is needed to let KMix control PulseAudio")
+ find_package(GLIB2)
+-macro_optional_find_package(MusicBrainz)
+-macro_log_feature(MUSICBRAINZ_FOUND "MusicBrainz" "A library that provides access to metadata lookup on the MusicBrainz server" "http://www.musicbrainz.org" FALSE "" "Music metadata lookup for KDE multimedia applications. You need version 2.x of libmusicbrainz.")
+ 
+ alsa_configure_file(${CMAKE_BINARY_DIR}/config-alsa.h)
+ 
+-macro_optional_find_package(Xine)
+-macro_log_feature(XINE_XCB_FOUND "Xine XCB" "Xine libraries" "http://www.xine-project.org/" FALSE "" "Xine and phonon-xine must be compiled with XCB support.")
+-
+-macro_optional_find_package(Taglib 1.6)
+-macro_log_feature(TAGLIB_FOUND "taglib" "Library for reading and editing audio meta data." "http://ktown.kde.org/~wheeler/taglib/" FALSE "1.6" "Required to build Juk and many Strigi Analyzers.")
+-
+-macro_optional_find_package(OggVorbis)
+-macro_log_feature(OGGVORBIS_FOUND "OggVorbis" "Libraries for Ogg Vorbis general audio compression codec" "http://www.xiph.org" FALSE "" "Required for the AudioCD Ogg Vorbis plugin.")
+-
+ add_definitions (${QT_DEFINITIONS} ${QT_QTDBUS_DEFINITIONS} ${KDE4_DEFINITIONS} )
+ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
+-if(MSVC)
+-    include_directories( ${TAGLIB_INCLUDES} )
+-endif(MSVC)
+ 
+ include (ConfigureChecks.cmake)
+ configure_file (config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+ 
+-add_subdirectory(libkcddb)
+-add_subdirectory(libkcompactdisc)
+-add_subdirectory(mplayerthumbs)
+-
+-if (TAGLIB_FOUND)
+-  macro_optional_add_subdirectory(juk)
+-endif(TAGLIB_FOUND)
+-
+-if (NOT APPLE)
+-  if(MUSICBRAINZ_FOUND)
+-     macro_optional_add_subdirectory(kscd)
+-  endif(MUSICBRAINZ_FOUND)
+-endif (NOT APPLE)
+-
+-macro_optional_add_subdirectory(strigi-analyzer)
+ macro_optional_add_subdirectory(kioslave)
+ 
+-if(NOT WIN32)
+-  macro_optional_add_subdirectory(kmix)
+-endif(NOT WIN32)
+-macro_optional_add_subdirectory(dragonplayer)
++macro_optional_add_subdirectory(kmix)
+ 
+ macro_optional_add_subdirectory(doc)
+ macro_display_feature_log()

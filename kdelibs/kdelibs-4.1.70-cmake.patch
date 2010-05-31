@@ -1,0 +1,11 @@
+diff -Naur kdelibs-4.1.70/cmake/modules/FindKDE4Internal.cmake kdelibs-4.1.70.cmake/cmake/modules/FindKDE4Internal.cmake
+--- kdelibs-4.1.70/cmake/modules/FindKDE4Internal.cmake	2008-10-19 16:56:45.000000000 +0200
++++ kdelibs-4.1.70.cmake/cmake/modules/FindKDE4Internal.cmake	2008-10-19 17:06:14.000000000 +0200
+@@ -817,6 +817,7 @@
+ # CMake generators if no build type is set.
+ if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE RelWithDebInfo)
++   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
+ endif (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+ 
+ 

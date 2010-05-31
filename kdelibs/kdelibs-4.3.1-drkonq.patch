@@ -1,0 +1,12 @@
+diff -up kdelibs-4.3.1/kdeui/util/kcrash.cpp.orig kdelibs-4.3.1/kdeui/util/kcrash.cpp
+--- kdelibs-4.3.1/kdeui/util/kcrash.cpp.orig	2009-09-21 17:42:19.000000000 +0200
++++ kdelibs-4.3.1/kdeui/util/kcrash.cpp	2009-09-21 17:43:44.000000000 +0200
+@@ -67,7 +67,7 @@ static char *s_autoRestartCommand = 0;
+ static char *s_appPath = 0;
+ static char *s_drkonqiPath = 0;
+ static KCrash::CrashFlags s_flags = 0;
+-static bool s_launchDrKonqi = true;
++static bool s_launchDrKonqi = false;
+ 
+ namespace KCrash
+ {

@@ -1,0 +1,77 @@
+diff -Naur kdelibs-4.1.72/kdecore/config/kconfig.cpp kdelibs-4.1.72.no-cache-kdeglobals-path/kdecore/config/kconfig.cpp
+--- kdelibs-4.1.72/kdecore/config/kconfig.cpp	2008-10-23 01:05:09.000000000 +0200
++++ kdelibs-4.1.72.no-cache-kdeglobals-path/kdecore/config/kconfig.cpp	2008-11-10 17:38:33.000000000 +0100
+@@ -61,12 +61,6 @@
+ {
+     sGlobalFileName = componentData.dirs()->saveLocation("config") +
+                           QString::fromLatin1("kdeglobals");
+-    if (wantGlobals()) {
+-        const KStandardDirs *const dirs = componentData.dirs();
+-        foreach(const QString& dir, dirs->findAllResources("config", QLatin1String("kdeglobals")) +
+-                                    dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
+-            globalFiles.push_front(dir);
+-    }
+     const QString etc_kderc =
+ #ifdef Q_WS_WIN
+         QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
+@@ -76,15 +70,11 @@
+     KEntryMap tmp;
+     // first entry is always /etc/kderc or empty if cannot read
+     if (KStandardDirs::checkAccess(etc_kderc, R_OK)) {
+-        if (!globalFiles.contains(etc_kderc))
+-            globalFiles.push_front(etc_kderc);
+-
+         if (!mappingsRegistered) {
+             KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
+             backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
+         }
+     } else {
+-        globalFiles.push_front(QString());
+         mappingsRegistered = true;
+     }
+ 
+@@ -461,10 +451,31 @@
+ 
+ void KConfigPrivate::parseGlobalFiles()
+ {
++    QStringList globalFiles;
++
++    if (wantGlobals()) {
++        const KStandardDirs *const dirs = componentData.dirs();
++        foreach(const QString& dir, dirs->findAllResources("config", QLatin1String("kdeglobals")) +
++                                    dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
++            globalFiles.push_front(dir);
++    }
++    const QString etc_kderc =
++#ifdef Q_WS_WIN
++        QFile::decodeName( QByteArray(::getenv("WINDIR")) + "\\kde4rc" );
++#else
++        QLatin1String("/etc/kde4rc");
++#endif
++    KEntryMap tmp;
++    // first entry is always /etc/kderc or empty if cannot read
++    if (KStandardDirs::checkAccess(etc_kderc, R_OK)) {
++        if (!globalFiles.contains(etc_kderc))
++            globalFiles.push_front(etc_kderc);
++    } else {
++        globalFiles.push_front(QString());
++    }
++
+ //    qDebug() << "parsing global files" << globalFiles;
+ 
+-    // TODO: can we cache the values in etc_kderc / other global files
+-    //       on a per-application basis?
+     const QByteArray utf8Locale = locale.toUtf8();
+     foreach(const QString& file, globalFiles) {
+         KConfigBackend::ParseOptions parseOpts = KConfigBackend::ParseGlobal|KConfigBackend::ParseExpansions;
+diff -Naur kdelibs-4.1.72/kdecore/config/kconfig_p.h kdelibs-4.1.72.no-cache-kdeglobals-path/kdecore/config/kconfig_p.h
+--- kdelibs-4.1.72/kdecore/config/kconfig_p.h	2008-06-03 11:34:54.000000000 +0200
++++ kdelibs-4.1.72.no-cache-kdeglobals-path/kdecore/config/kconfig_p.h	2008-11-10 17:38:33.000000000 +0100
+@@ -86,7 +86,6 @@
+ 
+     KEntryMap entryMap;
+     QString backendType;
+-    QStringList globalFiles;
+     QStack<QString> extraFiles;
+ 
+     QString locale;

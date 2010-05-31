@@ -1,0 +1,59 @@
+diff -up kdelibs-4.2.85/kdecore/kernel/kstandarddirs.cpp.libexecdir kdelibs-4.2.85/kdecore/kernel/kstandarddirs.cpp
+--- kdelibs-4.2.85/kdecore/kernel/kstandarddirs.cpp.libexecdir	2009-05-06 05:14:38.000000000 -0500
++++ kdelibs-4.2.85/kdecore/kernel/kstandarddirs.cpp	2009-05-14 11:34:04.732889142 -0500
+@@ -1759,7 +1759,7 @@ void KStandardDirs::addKDEDefaults()
+         addResourceType(types_string + types_indices[index], 0, types_string + types_indices[index+1], true);
+         index+=2;
+     }
+-    addResourceType("exe", "lib", "kde4/libexec", true );
++    addResourceType("exe", 0, "libexec/kde4", true );
+ 
+     addResourceDir("home", QDir::homePath(), false);
+ 
+diff -up kdelibs-4.2.85/kdecore/kernel/kstandarddirs_unix.cpp.libexecdir kdelibs-4.2.85/kdecore/kernel/kstandarddirs_unix.cpp
+--- kdelibs-4.2.85/kdecore/kernel/kstandarddirs_unix.cpp.libexecdir	2008-05-21 06:08:57.000000000 -0500
++++ kdelibs-4.2.85/kdecore/kernel/kstandarddirs_unix.cpp	2009-05-14 11:30:40.737623244 -0500
+@@ -62,7 +62,7 @@ QString KStandardDirs::installPath(const
+             if (strcmp("lib", type) == 0)
+                 return QString::fromLatin1(LIB_INSTALL_DIR "/");
+             if (strcmp("libexec", type) == 0)
+-                return QString::fromLatin1(KDEDIR "/lib" KDELIBSUFF "/kde4/libexec/");
++                return QString::fromLatin1(LIBEXEC_INSTALL_DIR "/");
+             if (strcmp("locale", type) == 0)
+                 return QString::fromLatin1(LOCALE_INSTALL_DIR "/");
+             break;
+diff -up kdelibs-4.2.85/kdecore/tests/kstandarddirstest.cpp.libexecdir kdelibs-4.2.85/kdecore/tests/kstandarddirstest.cpp
+--- kdelibs-4.2.85/kdecore/tests/kstandarddirstest.cpp.libexecdir	2009-02-27 06:31:32.000000000 -0600
++++ kdelibs-4.2.85/kdecore/tests/kstandarddirstest.cpp	2009-05-14 11:30:40.737623244 -0500
+@@ -74,8 +74,9 @@ void KStandarddirsTest::testFindResource
+ #define KIOSLAVE "bin/kioslave.exe"
+ #else
+ #define EXT ""
+-#define KIOSLAVE "kde4/libexec/kioslave"
++#define KIOSLAVE "libexec/kde4/kioslave"
+ #endif
++
+     const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" EXT );
+     QVERIFY( !bin.isEmpty() );
+     QVERIFY( bin.endsWith( KIOSLAVE ) );
+@@ -174,7 +175,7 @@ void KStandarddirsTest::testFindExe()
+     // findExe with a result in libexec
+     const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
+     QVERIFY( !lnusertemp.isEmpty() );
+-    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
++    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) || lnusertemp.endsWith( "libexec/kde4/lnusertemp" EXT ) ); 
+ #endif
+ 
+     // Check the "exe" resource too
+diff -up kdelibs-4.2.85/kio/tests/krununittest.cpp.libexecdir kdelibs-4.2.85/kio/tests/krununittest.cpp
+--- kdelibs-4.2.85/kio/tests/krununittest.cpp.libexecdir	2008-05-21 06:08:08.000000000 -0500
++++ kdelibs-4.2.85/kio/tests/krununittest.cpp	2009-05-14 11:30:40.737623244 -0500
+@@ -139,7 +139,7 @@ void KRunUnitTest::testProcessDesktopExe
+     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
+     if (!kdeinit.isEmpty()) {
+         QVERIFY(!kmailservice.isEmpty());
+-        QVERIFY(kmailservice.contains("kde4/libexec"));
++        QVERIFY(kmailservice.contains("kde4/libexec") || kmailservice.contains("libexec/kde4"));
+     }
+ 
+     QTest::newRow("%U l0") << "kdeinit4 %U" << l0 << false << kdeinit;

@@ -1,0 +1,12 @@
+diff -up kdebase-workspace-4.3.80/kdm/backend/client.c.append kdebase-workspace-4.3.80/kdm/backend/client.c
+--- kdebase-workspace-4.3.80/kdm/backend/client.c.append	2009-11-02 06:01:32.000000000 -0600
++++ kdebase-workspace-4.3.80/kdm/backend/client.c	2009-12-11 13:16:49.047992973 -0600
+@@ -1182,7 +1182,7 @@ createClientLog( const char *log )
+ 		if (!(lname = expandMacros( log, macros )))
+ 			exit( 1 );
+ 		unlink( lname );
+-		if ((lfd = open( lname, O_WRONLY|O_CREAT|O_EXCL, 0600 )) >= 0) {
++		if ((lfd = open( lname, O_WRONLY|O_CREAT|O_EXCL|O_APPEND, 0600 )) >= 0) {
+ 			dup2( lfd, 1 );
+ 			dup2( lfd, 2 );
+ 			close( lfd );

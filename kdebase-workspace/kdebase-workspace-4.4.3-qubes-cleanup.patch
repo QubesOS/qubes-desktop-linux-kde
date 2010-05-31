@@ -1,0 +1,129 @@
+--- kdebase-workspace-4.4.3-orig/plasma/CMakeLists.txt	2009-09-16 13:41:05.000000000 +0200
++++ kdebase-workspace-4.4.3/plasma/CMakeLists.txt	2010-05-27 18:27:24.636451584 +0200
+@@ -2,7 +2,6 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA
+ 
+ add_subdirectory(desktop)
+ add_subdirectory(generic)
+-add_subdirectory(netbook)
+ add_subdirectory(screensaver)
+ add_subdirectory(tools)
+ 
+--- kdebase-workspace-4.4.3-orig/plasma/generic/dataengines/CMakeLists.txt	2009-09-16 13:40:54.000000000 +0200
++++ kdebase-workspace-4.4.3/plasma/generic/dataengines/CMakeLists.txt	2010-05-27 18:26:53.915449934 +0200
+@@ -1,10 +1,7 @@
+ add_subdirectory(applicationjobs)
+ add_subdirectory(apps)
+-add_subdirectory(dict)
+ add_subdirectory(executable)
+ add_subdirectory(favicons)
+-add_subdirectory(filebrowser)
+-add_subdirectory(geolocation)
+ add_subdirectory(hotplug)
+ add_subdirectory(keystate)
+ add_subdirectory(network)
+@@ -14,20 +11,6 @@ add_subdirectory(places)
+ add_subdirectory(powermanagement)
+ add_subdirectory(soliddevice)
+ add_subdirectory(time)
+-add_subdirectory(weather)
+-
+-if (NEPOMUK_FOUND)
+-    add_subdirectory(metadata)
+-endif (NEPOMUK_FOUND)
+-
+-macro_optional_find_package(KdepimLibs 4.2.85)
+-macro_log_feature(KDEPIMLIBS_FOUND "kdepimlibs" "KDE PIM libraries" "http://www.kde.org" FALSE "" "Needed for building several plasma dataengines")
+-
+-if(KDEPIMLIBS_FOUND)
+-   add_subdirectory(akonadi)
+-   add_subdirectory(calendar)
+-   add_subdirectory(rss)
+-endif(KDEPIMLIBS_FOUND)
+ 
+ if(NOT WIN32)
+    add_subdirectory(mouse)
+--- kdebase-workspace-4.4.3-orig/kwin/clients/CMakeLists.txt	2009-11-21 10:44:29.000000000 +0100
++++ kdebase-workspace-4.4.3/kwin/clients/CMakeLists.txt	2010-05-27 18:29:34.125449438 +0200
+@@ -1,13 +1,2 @@
+ 
+-add_subdirectory( plastik ) 
+-add_subdirectory( aurorae )
+-add_subdirectory( b2 ) 
+-add_subdirectory( kde2 ) 
+-add_subdirectory( keramik ) 
+-add_subdirectory( laptop ) 
+-add_subdirectory( modernsystem ) 
+ add_subdirectory( oxygen ) 
+-add_subdirectory( quartz ) 
+-add_subdirectory( redmond ) 
+-add_subdirectory( web ) 
+-add_subdirectory( tabstrip )
+--- kdebase-workspace-4.4.3-orig/CMakeLists.txt	2010-04-29 21:54:51.000000000 +0200
++++ kdebase-workspace-4.4.3/CMakeLists.txt	2010-05-28 18:22:33.451482429 +0200
+@@ -34,9 +34,6 @@ macro_log_feature(GLIB2_FOUND "glib2" "L
+ 
+ macro_optional_find_package(Fontconfig)
+ 
+-macro_optional_find_package(Googlegadgets)
+-macro_log_feature(GOOGLEGADGETS_FOUND "GoogleGadgets" "Google Gadgets library" "http://code.google.com/p/google-gadgets-for-linux/" FALSE "0.11.0" "Needed to build plasma scriptengine for google gadgets")
+-
+ macro_optional_find_package(QEdje)
+ macro_log_feature(QEDJE_FOUND "QEdje" "QEdje library" "http://code.openbossa.org/projects/qedje/pages/Home" FALSE "" "Needed to build plasma scriptengine for edje files")
+ 
+@@ -45,14 +42,6 @@ macro_optional_find_package(OpenGL)
+ #### Python support ####
+ macro_optional_find_package(PythonLibrary)
+ 
+-macro_optional_find_package(SIP)
+-if(SIP_FOUND AND SIP_VERSION STRLESS "040701")
+-  message(STATUS "The version of SIP found is too old. 4.7.1 or later is needed.")
+-  set(SIP_FOUND)
+-endif(SIP_FOUND AND SIP_VERSION STRLESS "040701")
+- 
+-include(SIPMacros)
+- 
+ macro_optional_find_package(PyQt4)
+ if(PYQT4_FOUND AND PYQT4_VERSION STRLESS "040400")
+   message(STATUS "The version of PyQt found is too old. 4.4.0 or later is required.")
+@@ -71,12 +60,6 @@ macro_log_feature(PythonSupport_FOUND "P
+ include(MacroLibrary)
+ include(KDE4Defaults)
+ 
+-macro_optional_find_package(Nepomuk)
+-macro_log_feature(Nepomuk_FOUND "Nepomuk" "Nepomuk Libraries" "kdelibs" FALSE "" "Required to build Nepomuk features.")
+-
+-macro_optional_find_package(PolkitQt)
+-macro_log_feature(POLKITQT_FOUND "Polkit-Qt" "Qt Wrapper around PolicyKit" "kdesupport" FALSE "" "Required to build PolicyKit-KDE")
+-
+ include(ConfigureChecks.cmake)
+ if(NOT WIN32)
+   configure_file(config-unix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-unix.h )
+@@ -134,7 +117,6 @@ if(NOT WIN32)
+     macro_optional_add_subdirectory( PolicyKit-kde )
+   endif(POLKITQT_FOUND)
+ endif(NOT WIN32)
+-macro_optional_add_subdirectory( klipper )
+ macro_optional_add_subdirectory( krunner )
+ macro_optional_add_subdirectory( solid )
+ macro_optional_add_subdirectory( kmenuedit )
+--- kdebase-workspace-4.4.3/plasma/generic/applets/CMakeLists.txt.orig	2010-05-30 16:02:25.255618104 +0200
++++ kdebase-workspace-4.4.3/plasma/generic/applets/CMakeLists.txt	2010-05-30 16:02:50.446618320 +0200
+@@ -1,18 +1,11 @@
+ add_subdirectory(analog-clock)
+-add_subdirectory(activitybar)
+ add_subdirectory(battery)
+-add_subdirectory(calendar)
+-add_subdirectory(devicenotifier)
+ add_subdirectory(digital-clock)
+ add_subdirectory(icon)
+ add_subdirectory(lock_logout)
+ add_subdirectory(quicklaunch)
+ add_subdirectory(panelspacer)
+ 
+-if(QT_QTWEBKIT_FOUND)
+-   add_subdirectory(webbrowser)
+-endif(QT_QTWEBKIT_FOUND)
+-
+ if(NOT WIN32)
+    add_subdirectory(system-monitor)
+    add_subdirectory(systemtray)

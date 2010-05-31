@@ -3,6 +3,7 @@
 Summary: KDE Libraries
 Version: %{version}
 Release: %{rel}.qubes
+Epoch:   1000
 
 Name: kdelibs
 Provides: kdelibs4 = %{version}-%{release}

@@ -4,6 +4,7 @@ Summary: Config files for KDE in Qubes Dom0
 Name:    kde-settings
 Version: %{version}
 Release: %{rel}.qubes
+Epoch:   1000
 
 License: Public Domain
 BuildArch: noarch

@@ -5,6 +5,7 @@ Name:    kdebase
 Summary: KDE Core Files
 Version: %{version}
 Release: %{rel}.qubes
+Epoch:   1000
 
 
 

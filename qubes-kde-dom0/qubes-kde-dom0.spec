@@ -1,6 +1,6 @@
 # This is a meta package that makes installing all KDE components easy
 
-%define rel 4
+%define rel 5
 
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0

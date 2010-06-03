@@ -1,0 +1,870 @@
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/CMakeLists.txt kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/CMakeLists.txt
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/CMakeLists.txt	2009-09-16 13:40:39.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/CMakeLists.txt	2010-06-03 21:20:39.592208292 +0200
+@@ -7,6 +7,7 @@ set(kwin3_plastik_PART_SRCS
+    plastik.cpp
+    plastikclient.cpp
+    plastikbutton.cpp
++   qubeslabels.cpp
+    )
+ 
+ 
+@@ -14,7 +15,7 @@ kde4_add_plugin(kwin3_plastik ${kwin3_pl
+ 
+ 
+ 
+-target_link_libraries(kwin3_plastik kdecorations )
++target_link_libraries(kwin3_plastik kdecorations ${X11_LIBRARIES})
+ 
+ install(TARGETS kwin3_plastik  DESTINATION ${PLUGIN_INSTALL_DIR} )
+ 
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastikbutton.cpp kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikbutton.cpp
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastikbutton.cpp	2009-09-16 13:40:39.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikbutton.cpp	2010-06-03 23:26:13.537832786 +0200
+@@ -44,11 +44,12 @@ namespace KWinPlastik
+ static const uint TIMERINTERVAL = 50; // msec
+ static const uint ANIMATIONSTEPS = 4;
+ 
+-PlastikButton::PlastikButton(ButtonType type, PlastikClient *parent)
++PlastikButton::PlastikButton(ButtonType type, const QubesLabel& label, PlastikClient *parent)
+     : KCommonDecorationButton(type, parent),
+     m_client(parent),
+     m_iconType(NumButtonIcons),
+-    hover(false)
++    hover(false),
++    qubes_label (label)
+ {
+     setAttribute(Qt::WA_NoSystemBackground);
+ 
+@@ -181,7 +182,7 @@ void PlastikButton::drawButton(QPainter 
+ 
+ 
+     double c = KGlobalSettings::contrastF();
+-    QColor titleBar = KDecoration::options()->color(KDecoration::ColorTitleBar, active);
++    QColor titleBar = KDecoration::options()->color(KDecoration::ColorButtonBg, active);
+     QColor contourTop = KColorScheme::shade(titleBar, KColorScheme::DarkShade, c - 0.4);
+     QColor contourBottom = KColorScheme::shade(titleBar, KColorScheme::MidShade, c);
+     QColor surfaceTop = KColorScheme::shade(titleBar, KColorScheme::MidlightShade, c - 0.4);
+@@ -254,7 +255,10 @@ void PlastikButton::drawButton(QPainter 
+             dY++;
+         }
+ 
+-        QColor fontColor = Handler()->getColor(TitleFont,active);
++        //QColor fontColor = Handler()->getColor(qubes_label, TitleFont,active);
++        //QColor fontColor = KDecoration::options()->color(KDecoration::ColorFont, active);
++        QColor fontColor = KColorUtils::darken (titleBar, 0.8);
++
+         if(!isDown() && Handler()->titleShadow() ) {
+             QColor shadowColor = KColorScheme::shade(fontColor, KColorScheme::ShadowShade);
+             shadowColor.setAlphaF(shadowColor.alphaF() * 0.3);
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastikbutton.h kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikbutton.h
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastikbutton.h	2009-09-16 13:40:39.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikbutton.h	2010-06-03 14:35:02.485402111 +0200
+@@ -38,7 +38,7 @@ class PlastikButton : public KCommonDeco
+ {
+     Q_OBJECT
+ public:
+-    PlastikButton(ButtonType type, PlastikClient *parent);
++    PlastikButton(ButtonType type, const QubesLabel &label, PlastikClient *parent);
+     ~PlastikButton();
+ 
+     void reset(unsigned long changed);
+@@ -59,6 +59,7 @@ private:
+     PlastikClient *m_client;
+     ButtonIcon m_iconType;
+     bool hover;
++    QubesLabel qubes_label;
+ 
+     QTimer *animTmr;
+     uint animProgress;
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastikclient.cpp kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikclient.cpp
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastikclient.cpp	2009-09-23 21:21:46.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikclient.cpp	2010-06-03 21:43:14.830833797 +0200
+@@ -37,6 +37,10 @@
+ 
+ #include <KColorScheme>
+ 
++#include <QX11Info>
++#include <X11/Xlib.h>
++#include <X11/Xatom.h>
++
+ QColor alphaColor(QColor color, double alpha)
+ {
+     if (alpha >= 1.0)
+@@ -129,6 +133,7 @@ int PlastikClient::layoutMetric(LayoutMe
+ 
+         case LM_ButtonWidth:
+         case LM_ButtonHeight:
++            return Handler()->titleHeight()-2*2 ;
+         case LM_TitleHeight:
+         {
+             if (respectWindowState && isToolWindow()) {
+@@ -139,10 +144,10 @@ int PlastikClient::layoutMetric(LayoutMe
+         }
+ 
+         case LM_ButtonSpacing:
+-            return 1;
++            return 2;
+ 
+         case LM_ButtonMarginTop:
+-            return 0;
++            return 2;
+ 
+         default:
+             return KCommonDecoration::layoutMetric(lm, respectWindowState, btn);
+@@ -153,31 +158,33 @@ KCommonDecorationButton *PlastikClient::
+ {
+     switch (type) {
+         case MenuButton:
+-            return new PlastikButton(MenuButton, this);
++            return new PlastikButton(MenuButton, get_qubes_label(), this);
+ 
++#if 0
+         case OnAllDesktopsButton:
+-            return new PlastikButton(OnAllDesktopsButton, this);
++            return new PlastikButton(OnAllDesktopsButton, get_qubes_label(), this);
++#endif
+ 
+         case HelpButton:
+-            return new PlastikButton(HelpButton, this);
++            return new PlastikButton(HelpButton, get_qubes_label(), this);
+ 
+         case MinButton:
+-            return new PlastikButton(MinButton, this);
++            return new PlastikButton(MinButton, get_qubes_label(), this);
+ 
+         case MaxButton:
+-            return new PlastikButton(MaxButton, this);
++            return new PlastikButton(MaxButton, get_qubes_label(), this);
+ 
+         case CloseButton:
+-            return new PlastikButton(CloseButton, this);
++            return new PlastikButton(CloseButton, get_qubes_label(), this);
+ 
+         case AboveButton:
+-            return new PlastikButton(AboveButton, this);
++            return new PlastikButton(AboveButton, get_qubes_label(), this);
+ 
+         case BelowButton:
+-            return new PlastikButton(BelowButton, this);
++            return new PlastikButton(BelowButton, get_qubes_label(), this);
+ 
+         case ShadeButton:
+-            return new PlastikButton(ShadeButton, this);
++            return new PlastikButton(ShadeButton, get_qubes_label(), this);
+ 
+         default:
+             return 0;
+@@ -229,6 +236,38 @@ QRegion PlastikClient::cornerShape(Windo
+ 
+ }
+ 
++const QubesLabel& PlastikClient::get_qubes_label() const {
++
++    WId wid = windowId();
++    Atom atom_label = XInternAtom (QX11Info::display(), "_QUBES_LABEL", True);
++    if (atom_label == 0) return QubesLabels[QUBES_LABEL_DOM0];
++
++    Atom actual_type;
++    int actual_format;
++    unsigned long nitems = 0, bytes_left;
++    char *data = 0;
++
++    int result = XGetWindowProperty (QX11Info::display(), wid, atom_label,
++
++            0L /* offset */,
++            1L /* length */,
++            false /* don't delete */,
++            XA_CARDINAL,
++            &actual_type,
++            &actual_format,
++            &nitems,
++            &bytes_left,
++            (uchar**)(&data));
++
++    if (result != Success || nitems != 1) {
++        // ERROR? Only Dom0 Windows don't have this property set...
++        return QubesLabels[QUBES_LABEL_DOM0];
++    }
++
++    int label = (int)*data;
++    return QubesLabels[label];
++}
++
+ void PlastikClient::paintEvent(QPaintEvent *e)
+ {
+     QRegion region = e->region();
+@@ -277,7 +316,7 @@ void PlastikClient::paintEvent(QPaintEve
+     {
+         tempRect.setRect(r_x+2, r_y, r_w-2*2, titleEdgeTop );
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(TitleBarTileTop, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), TitleBarTileTop, active, toolWindow) );
+         }
+     }
+ 
+@@ -288,7 +327,7 @@ void PlastikClient::paintEvent(QPaintEve
+     {
+         tempRect.setRect(r_x, r_y, borderLeft, titleEdgeTop+titleHeight+titleEdgeBottom);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(TitleBarLeft, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), TitleBarLeft, active, toolWindow) );
+             titleMarginLeft = borderLeft;
+         }
+     }
+@@ -298,7 +337,7 @@ void PlastikClient::paintEvent(QPaintEve
+     {
+         tempRect.setRect(borderRightLeft, r_y, borderRight, titleEdgeTop+titleHeight+titleEdgeBottom);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(TitleBarRight, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), TitleBarRight, active, toolWindow) );
+             titleMarginRight = borderRight;
+         }
+     }
+@@ -317,14 +356,14 @@ void PlastikClient::paintEvent(QPaintEve
+         tempRect.setRect(r_x+titleMarginLeft, m_captionRect.top(),
+                          m_captionRect.left() - (r_x+titleMarginLeft), m_captionRect.height() );
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(TitleBarTile, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), TitleBarTile, active, toolWindow) );
+         }
+ 
+         // right to the title
+         tempRect.setRect(m_captionRect.right()+1, m_captionRect.top(),
+                          (r_x2-titleMarginRight) - m_captionRect.right(), m_captionRect.height() );
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(TitleBarTile, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), TitleBarTile, active, toolWindow) );
+         }
+ 
+     }
+@@ -334,7 +373,7 @@ void PlastikClient::paintEvent(QPaintEve
+     {
+         tempRect.setCoords(r_x, titleEdgeBottomBottom+1, borderLeftRight, borderBottomTop-1);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(BorderLeftTile, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), BorderLeftTile, active, toolWindow) );
+         }
+     }
+ 
+@@ -343,7 +382,7 @@ void PlastikClient::paintEvent(QPaintEve
+     {
+         tempRect.setCoords(borderRightLeft, titleEdgeBottomBottom+1, r_x2, borderBottomTop-1);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(BorderRightTile, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), BorderRightTile, active, toolWindow) );
+         }
+     }
+ 
+@@ -355,19 +394,19 @@ void PlastikClient::paintEvent(QPaintEve
+ 
+         tempRect.setRect(r_x, borderBottomTop, borderLeft, borderBottom);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(BorderBottomLeft, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), BorderBottomLeft, active, toolWindow) );
+             l = tempRect.right()+1;
+         }
+ 
+         tempRect.setRect(borderRightLeft, borderBottomTop, borderLeft, borderBottom);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(BorderBottomRight, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), BorderBottomRight, active, toolWindow) );
+             r = tempRect.left()-1;
+         }
+ 
+         tempRect.setCoords(l, borderBottomTop, r, r_y2);
+         if (tempRect.isValid() && region.contains(tempRect) ) {
+-            painter.drawTiledPixmap(tempRect, handler->pixmap(BorderBottomTile, active, toolWindow) );
++            painter.drawTiledPixmap(tempRect, handler->pixmap(get_qubes_label(), BorderBottomTile, active, toolWindow) );
+         }
+     }
+ }
+@@ -451,7 +490,7 @@ void PlastikClient::reset( unsigned long
+ 
+ const QPixmap &PlastikClient::getTitleBarTile(bool active) const
+ {
+-    return Handler()->pixmap(TitleBarTile, active, isToolWindow() );
++    return Handler()->pixmap(get_qubes_label(), TitleBarTile, active, isToolWindow() );
+ }
+ 
+ const QPixmap &PlastikClient::captionPixmap() const
+@@ -471,6 +510,8 @@ const QPixmap &PlastikClient::captionPix
+         c.append(" [...]");
+     }
+ 
++    c.append(" [" + get_qubes_label().name + "]" );
++
+     QFontMetrics fm(s_titleFont);
+     int captionWidth  = fm.width(c);
+     int captionDescent = fm.descent();
+@@ -485,7 +526,7 @@ const QPixmap &PlastikClient::captionPix
+ 
+     painter.begin(captionPixmap);
+     painter.drawTiledPixmap(captionPixmap->rect(),
+-                            Handler()->pixmap(TitleBarTile, active, isToolWindow()) );
++                            Handler()->pixmap(get_qubes_label(), TitleBarTile, active, isToolWindow()) );
+ 
+     painter.setFont(s_titleFont);
+ 
+@@ -495,7 +536,8 @@ const QPixmap &PlastikClient::captionPix
+ 
+     QPoint tp = boundingRect.bottomLeft() - QPoint(0, captionDescent);
+ 
+-    QColor fontColor = Handler()->getColor(TitleFont,active);
++    QColor fontColor = Handler()->getColor(get_qubes_label(), TitleFont,active);
++#if 0
+     if(Handler()->titleShadow())
+     {
+         QColor shadowColor = KColorScheme::shade(fontColor, KColorScheme::ShadowShade);
+@@ -508,6 +550,7 @@ const QPixmap &PlastikClient::captionPix
+         painter.setPen(alphaColor(shadowColor, 0.5) );
+         painter.drawText(tp+QPoint(1,1), c);
+     }
++#endif
+     painter.setPen(fontColor );
+     painter.drawText(tp, c );
+     painter.end();
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastikclient.h kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikclient.h
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastikclient.h	2009-09-16 13:40:39.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastikclient.h	2010-06-03 14:26:28.546201306 +0200
+@@ -51,6 +51,8 @@ public:
+     const QPixmap &getTitleBarTile(bool active) const;
+ 
+ private:
++    const QubesLabel& get_qubes_label() const;
++
+     QRect captionRect() const;
+ 
+     const QPixmap &captionPixmap() const;
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastik.cpp kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastik.cpp
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastik.cpp	2009-09-16 13:40:39.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastik.cpp	2010-06-03 23:27:32.410832821 +0200
+@@ -42,7 +42,7 @@ namespace KWinPlastik
+ 
+ PlastikHandler::PlastikHandler()
+ {
+-    memset(m_pixmaps, 0, sizeof(QPixmap*)*NumPixmaps*2*2); // set elements to 0
++    memset(m_pixmaps, 0, sizeof(QPixmap*)*NumPixmaps*2*2*MAX_QUBES_LABELS); // set elements to 0
+     memset(m_bitmaps, 0, sizeof(QBitmap*)*NumButtonIcons*2);
+ 
+     reset(0);
+@@ -50,10 +50,12 @@ PlastikHandler::PlastikHandler()
+ 
+ PlastikHandler::~PlastikHandler()
+ {
+-    for (int t=0; t < 2; ++t)
+-        for (int a=0; a < 2; ++a)
+-            for (int i=0; i < NumPixmaps; ++i)
+-                delete m_pixmaps[t][a][i];
++	
++    for (unsigned label = 0; label < MAX_QUBES_LABELS; label++)
++        for (int t=0; t < 2; ++t)
++            for (int a=0; a < 2; ++a)
++                for (int i=0; i < NumPixmaps; ++i)
++                    delete m_pixmaps[label][t][a][i];
+     for (int t=0; t < 2; ++t)
+         for (int i=0; i < NumButtonIcons; ++i)
+             delete m_bitmaps[t][i];
+@@ -97,16 +99,19 @@ bool PlastikHandler::reset(unsigned long
+     readConfig();
+ 
+     // pixmaps probably need to be updated, so delete the cache.
+-    for (int t=0; t < 2; ++t) {
+-        for (int a=0; a < 2; ++a) {
+-            for (int i=0; i < NumPixmaps; i++) {
+-                if (m_pixmaps[t][a][i]) {
+-                    delete m_pixmaps[t][a][i];
+-                    m_pixmaps[t][a][i] = 0;
++    for (unsigned label = 0; label < MAX_QUBES_LABELS; label++) {
++        for (int t=0; t < 2; ++t) {
++            for (int a=0; a < 2; ++a) {
++                for (int i=0; i < NumPixmaps; i++) {
++                    if (m_pixmaps[label][t][a][i]) {
++                        delete m_pixmaps[label][t][a][i];
++                        m_pixmaps[label][t][a][i] = 0;
++                    }
+                 }
+             }
+         }
+     }
++
+     for (int t=0; t < 2; ++t) {
+         for (int i=0; i < NumButtonIcons; i++) {
+             if (m_bitmaps[t][i]) {
+@@ -147,7 +152,7 @@ bool PlastikHandler::supports( Ability a
+         case AbilityAnnounceColors:
+         // buttons
+         case AbilityButtonMenu:
+-        case AbilityButtonOnAllDesktops:
++        //case AbilityButtonOnAllDesktops:
+         case AbilityButtonSpacer:
+         case AbilityButtonHelp:
+         case AbilityButtonMinimize:
+@@ -201,40 +206,33 @@ void PlastikHandler::readConfig()
+     m_menuClose = config.readEntry("CloseOnMenuDoubleClick", true);
+ }
+ 
+-QColor PlastikHandler::getColor(KWinPlastik::ColorType type, const bool active)
++QColor PlastikHandler::getColor(const QubesLabel& qubes_label, KWinPlastik::ColorType type, const bool active)
+ {
+-    double c = KGlobalSettings::contrastF();
++    QColor color = qubes_label.color;
+     switch (type) {
+         case WindowContour:
+-            return KColorScheme::shade(KDecoration::options()->color(ColorTitleBar, active), KColorScheme::DarkShade, c);
++            return KColorUtils::darken(color);
+         case TitleGradient1:
+-            return KColorScheme::shade(KDecoration::options()->color(ColorTitleBar, active), KColorScheme::MidlightShade, c-0.4);
+-            break;
++            return KColorUtils::darken(color, 0.3);
+         case TitleGradient2:
+-            return KColorScheme::shade(KDecoration::options()->color(ColorTitleBar, active), KColorScheme::MidShade, c-0.4);
+-            break;
++            return KColorUtils::darken(color, 0.4);
+         case TitleGradient3:
+-            return KDecoration::options()->color(ColorTitleBar, active);
+-            break;
++            return color;
+         case ShadeTitleLight:
+-            return KColorScheme::shade(KDecoration::options()->color(ColorTitleBar, active), KColorScheme::LightShade, active?c-0.4:c-0.8);
+-            break;
++            return KColorUtils::darken(color, 0.3);
+         case ShadeTitleDark:
+-            return KColorScheme::shade(KDecoration::options()->color(ColorTitleBar, active), KColorScheme::DarkShade, active?c-0.4:c-0.8);
+-            break;
+-        case Border:
+-            return KDecoration::options()->color(ColorFrame, active);
++            return KColorUtils::darken(color);
+         case TitleFont:
+-            return KDecoration::options()->color(ColorFont, active);
++                return active ? qubes_label.color_text_active : qubes_label.color_text_inactive;
+         default:
+             return Qt::black;
+     }
+ }
+ 
+-const QPixmap &PlastikHandler::pixmap(Pixmaps type, bool active, bool toolWindow)
++const QPixmap &PlastikHandler::pixmap(const QubesLabel& qubes_label, Pixmaps type, bool active, bool toolWindow)
+ {
+-    if (m_pixmaps[toolWindow][active][type])
+-        return *m_pixmaps[toolWindow][active][type];
++    if (m_pixmaps[qubes_label.index][toolWindow][active][type])
++        return *m_pixmaps[qubes_label.index][toolWindow][active][type];
+ 
+     QPixmap *pm = 0;
+ 
+@@ -249,9 +247,9 @@ const QPixmap &PlastikHandler::pixmap(Pi
+             QPainter painter(&gradient);
+             painter.setPen(Qt::NoPen);
+             QLinearGradient grad(0, 0, 0, gradientHeight);
+-            grad.setColorAt(0.0,                                  getColor(TitleGradient1, active));
+-            grad.setColorAt(4.0 / (double)gradientHeight,         getColor(TitleGradient2, active));
+-            grad.setColorAt(1.0,                                  getColor(TitleGradient3, active));
++            grad.setColorAt(0.0,                                  getColor(qubes_label, TitleGradient1, active));
++            grad.setColorAt(4.0 / (double)gradientHeight,         getColor(qubes_label, TitleGradient2, active));
++            grad.setColorAt(1.0,                                  getColor(qubes_label, TitleGradient3, active));
+             painter.setBrush(grad);
+             painter.drawRect(0, 0, 1, gradientHeight);
+             painter.end();
+@@ -261,10 +259,10 @@ const QPixmap &PlastikHandler::pixmap(Pi
+                 pm = new QPixmap(1, 4);
+                 painter.begin(pm);
+                 // contour
+-                painter.setPen(getColor(WindowContour, active) );
++                painter.setPen(getColor(qubes_label, WindowContour, active) );
+                 painter.drawPoint(0,0);
+                 // top highlight
+-                painter.setPen(getColor(ShadeTitleLight, active) );
++                painter.setPen(getColor(qubes_label, ShadeTitleLight, active) );
+                 painter.drawPoint(0,1);
+                 // gradient
+                 painter.drawPixmap(0, 2, gradient);
+@@ -274,9 +272,9 @@ const QPixmap &PlastikHandler::pixmap(Pi
+                 painter.begin(pm);
+                 painter.drawPixmap(0, 0, gradient, 0,2 ,-1,-1);
+                 if (m_coloredBorder) {
+-                    painter.setPen(KColorScheme::shade(getColor(TitleGradient3, active), KColorScheme::MidShade) );
++                    painter.setPen(KColorScheme::shade(getColor(qubes_label, TitleGradient3, active), KColorScheme::MidShade) );
+                 } else {
+-                    painter.setPen(getColor(TitleGradient3, active) );
++                    painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                 }
+                 painter.drawPoint(0,titleBarTileHeight-1);
+                 painter.end();
+@@ -293,19 +291,19 @@ const QPixmap &PlastikHandler::pixmap(Pi
+             pm = new QPixmap(w, h);
+             QPainter painter(pm);
+ 
+-            painter.drawTiledPixmap(0,0, w, 4, pixmap(TitleBarTileTop, active, toolWindow) );
+-            painter.drawTiledPixmap(0,4, w, h-4, pixmap(TitleBarTile, active, toolWindow) );
++            painter.drawTiledPixmap(0,0, w, 4, pixmap(qubes_label, TitleBarTileTop, active, toolWindow) );
++            painter.drawTiledPixmap(0,4, w, h-4, pixmap(qubes_label, TitleBarTile, active, toolWindow) );
+ 
+-            painter.setPen(getColor(WindowContour, active) );
++            painter.setPen(getColor(qubes_label, WindowContour, active) );
+             painter.drawLine(0,0, 0,h);
+             painter.drawPoint(1,1);
+ 
+-            const QColor highlightTitleLeft = getColor(ShadeTitleLight, active);
++            const QColor highlightTitleLeft = getColor(qubes_label, ShadeTitleLight, active);
+             painter.setPen(highlightTitleLeft);
+             painter.drawLine(1,2, 1,h);
+ 
+             if (m_coloredBorder) {
+-                painter.setPen(getColor(TitleGradient3, active) );
++                painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                 painter.drawLine(2,h-1, w-1,h-1);
+             }
+ 
+@@ -325,19 +323,19 @@ const QPixmap &PlastikHandler::pixmap(Pi
+             pm = new QPixmap(w, h);
+             QPainter painter(pm);
+ 
+-            painter.drawTiledPixmap(0,0, w, 4, pixmap(TitleBarTileTop, active, toolWindow) );
+-            painter.drawTiledPixmap(0,4, w, h-4, pixmap(TitleBarTile, active, toolWindow) );
++            painter.drawTiledPixmap(0,0, w, 4, pixmap(qubes_label, TitleBarTileTop, active, toolWindow) );
++            painter.drawTiledPixmap(0,4, w, h-4, pixmap(qubes_label, TitleBarTile, active, toolWindow) );
+ 
+-            painter.setPen(getColor(WindowContour, active) );
++            painter.setPen(getColor(qubes_label, WindowContour, active) );
+             painter.drawLine(w-1,0, w-1,h);
+             painter.drawPoint(w-2,1);
+ 
+-            const QColor highlightTitleRight = getColor(ShadeTitleDark, active);
++            const QColor highlightTitleRight = getColor(qubes_label, ShadeTitleDark, active);
+             painter.setPen(highlightTitleRight);
+             painter.drawLine(w-2,2, w-2,h);
+ 
+             if (m_coloredBorder) {
+-                painter.setPen(getColor(TitleGradient3, active) );
++                painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                 painter.drawLine(0,h-1, w-3,h-1);
+             }
+ 
+@@ -356,22 +354,22 @@ const QPixmap &PlastikHandler::pixmap(Pi
+             pm = new QPixmap(w, 1);
+             QPainter painter(pm);
+             if (m_coloredBorder) {
+-                painter.setPen(getColor(WindowContour, active) );
++                painter.setPen(getColor(qubes_label, WindowContour, active) );
+                 painter.drawPoint(0, 0);
+-                painter.setPen(getColor(ShadeTitleLight, active) );
++                painter.setPen(getColor(qubes_label, ShadeTitleLight, active) );
+                 painter.drawPoint(1, 0);
+                 if (w > 3) {
+-                    painter.setPen(getColor(TitleGradient3, active) );
++                    painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                     painter.drawLine(2,0, w-2,0);
+                 }
+-                painter.setPen(KColorScheme::shade(getColor(TitleGradient3, active), KColorScheme::MidShade) );
++                painter.setPen(KColorScheme::shade(getColor(qubes_label, TitleGradient3, active), KColorScheme::MidShade) );
+                 painter.drawPoint(w-1,0);
+             } else {
+-                painter.setPen(getColor(WindowContour, active) );
++                painter.setPen(getColor(qubes_label, WindowContour, active) );
+                 painter.drawPoint(0, 0);
+-                painter.setPen(KColorUtils::mix(getColor(Border, active), getColor(ShadeTitleLight, active) ) );
++                painter.setPen(KColorUtils::mix(getColor(qubes_label, Border, active), getColor(qubes_label, ShadeTitleLight, active) ) );
+                 painter.drawPoint(1, 0);
+-                painter.setPen(getColor(Border, active) );
++                painter.setPen(getColor(qubes_label, Border, active) );
+                 painter.drawLine(2,0, w-1,0);
+             }
+ 
+@@ -387,22 +385,22 @@ const QPixmap &PlastikHandler::pixmap(Pi
+             pm = new QPixmap(w, 1);
+             QPainter painter(pm);
+             if (m_coloredBorder) {
+-                painter.setPen(KColorScheme::shade(getColor(TitleGradient3, active), KColorScheme::MidShade) );
++                painter.setPen(KColorScheme::shade(getColor(qubes_label, TitleGradient3, active), KColorScheme::MidShade) );
+                 painter.drawPoint(0,0);
+                 if (w > 3) {
+-                    painter.setPen(getColor(TitleGradient3, active) );
++                    painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                     painter.drawLine(1,0, w-3,0);
+                 }
+-                painter.setPen(getColor(ShadeTitleDark, active) );
++                painter.setPen(getColor(qubes_label, ShadeTitleDark, active) );
+                 painter.drawPoint(w-2, 0);
+-                painter.setPen(getColor(WindowContour, active) );
++                painter.setPen(getColor(qubes_label, WindowContour, active) );
+                 painter.drawPoint(w-1, 0);
+             } else {
+-                painter.setPen(getColor(Border, active) );
++                painter.setPen(getColor(qubes_label, Border, active) );
+                 painter.drawLine(0,0, w-3,0);
+-                painter.setPen(KColorUtils::mix(getColor(Border, active), getColor(ShadeTitleDark, active) ) );
++                painter.setPen(KColorUtils::mix(getColor(qubes_label, Border, active), getColor(qubes_label, ShadeTitleDark, active) ) );
+                 painter.drawPoint(w-2, 0);
+-                painter.setPen(getColor(WindowContour, active) );
++                painter.setPen(getColor(qubes_label, WindowContour, active) );
+                 painter.drawPoint(w-1, 0);
+             }
+             painter.end();
+@@ -417,19 +415,19 @@ const QPixmap &PlastikHandler::pixmap(Pi
+ 
+             pm = new QPixmap(w, h);
+             QPainter painter(pm);
+-            painter.drawTiledPixmap(0,0,w,h, pixmap(BorderBottomTile, active, toolWindow) );
+-            painter.setPen(getColor(WindowContour, active) );
++            painter.drawTiledPixmap(0,0,w,h, pixmap(qubes_label, BorderBottomTile, active, toolWindow) );
++            painter.setPen(getColor(qubes_label, WindowContour, active) );
+             painter.drawLine(0,0, 0,h);
+             if (m_coloredBorder) {
+                 if (h > 3) {
+-                    painter.setPen(getColor(ShadeTitleLight, active) );
++                    painter.setPen(getColor(qubes_label, ShadeTitleLight, active) );
+                     painter.drawLine(1,0, 1,h-2);
+                 }
+ 
+-                painter.setPen(getColor(TitleGradient3, active) );
++                painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                 painter.drawLine(2,0, w-1,0);
+             } else {
+-                painter.setPen(KColorUtils::mix(getColor(Border, active), getColor(ShadeTitleLight, active) ) );
++                painter.setPen(KColorUtils::mix(getColor(qubes_label, Border, active), getColor(qubes_label, ShadeTitleLight, active) ) );
+                 painter.drawLine(1,0, 1,h-2);
+             }
+ 
+@@ -445,17 +443,17 @@ const QPixmap &PlastikHandler::pixmap(Pi
+ 
+             pm = new QPixmap(w, h);
+             QPainter painter(pm);
+-            painter.drawTiledPixmap(0,0,w,h, pixmap(BorderBottomTile, active, toolWindow) );
+-            painter.setPen(getColor(WindowContour, active) );
++            painter.drawTiledPixmap(0,0,w,h, pixmap(qubes_label, BorderBottomTile, active, toolWindow) );
++            painter.setPen(getColor(qubes_label, WindowContour, active) );
+             painter.drawLine(w-1,0, w-1,h);
+             if (m_coloredBorder) {
+-                painter.setPen(getColor(ShadeTitleDark, active) );
++                painter.setPen(getColor(qubes_label, ShadeTitleDark, active) );
+                 painter.drawLine(w-2,0, w-2,h-2);
+ 
+-                painter.setPen(getColor(TitleGradient3, active) );
++                painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                 painter.drawLine(0,0, w-3,0);
+             } else {
+-                painter.setPen(KColorUtils::mix(getColor(Border, active), getColor(ShadeTitleDark, active) ) );
++                painter.setPen(KColorUtils::mix(getColor(qubes_label, Border, active), getColor(qubes_label, ShadeTitleDark, active) ) );
+                 painter.drawLine(w-2,0, w-2,h-2);
+             }
+ 
+@@ -473,19 +471,19 @@ const QPixmap &PlastikHandler::pixmap(Pi
+             QPainter painter(pm);
+ 
+             if (m_coloredBorder) {
+-                painter.setPen(KColorScheme::shade(getColor(TitleGradient3, active), KColorScheme::MidShade) );
++                painter.setPen(KColorScheme::shade(getColor(qubes_label, TitleGradient3, active), KColorScheme::MidShade) );
+                 painter.drawPoint(0,0);
+-                painter.setPen(getColor(TitleGradient3, active) );
++                painter.setPen(getColor(qubes_label, TitleGradient3, active) );
+                 painter.drawLine(0,1, 0,h-3);
+-                painter.setPen(getColor(ShadeTitleDark, active) );
++                painter.setPen(getColor(qubes_label, ShadeTitleDark, active) );
+                 painter.drawPoint(0, h-2);
+             } else {
+-                painter.setPen(getColor(Border, active) );
++                painter.setPen(getColor(qubes_label, Border, active) );
+                 painter.drawLine(0,0, 0,h-3);
+-                painter.setPen(KColorUtils::mix(getColor(Border, active), getColor(ShadeTitleDark, active) ) );
++                painter.setPen(KColorUtils::mix(getColor(qubes_label, Border, active), getColor(qubes_label, ShadeTitleDark, active) ) );
+                 painter.drawPoint(0, h-2);
+             }
+-            painter.setPen(getColor(WindowContour, active) );
++            painter.setPen(getColor(qubes_label, WindowContour, active) );
+             painter.drawPoint(0, h-1);
+             painter.end();
+ 
+@@ -493,7 +491,7 @@ const QPixmap &PlastikHandler::pixmap(Pi
+         }
+     }
+ 
+-    m_pixmaps[toolWindow][active][type] = pm;
++    m_pixmaps[qubes_label.index][toolWindow][active][type] = pm;
+     return *pm;
+ }
+ 
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastik.desktop kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastik.desktop
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastik.desktop	2010-04-29 21:54:45.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastik.desktop	2010-06-03 23:27:44.222832805 +0200
+@@ -1,88 +1,4 @@
+ [Desktop Entry]
+ Icon=
+-Name=Plastik
+-Name[af]=Plastiek
+-Name[ar]=بلاستك
+-Name[be]=Plastik
+-Name[be@latin]=Plastik
+-Name[bg]=Пластик
+-Name[bn]=প্লাস্টিক
+-Name[bn_IN]=Plastik (প্লাস্টিক)
+-Name[br]=Plastik
+-Name[ca]=Plastik
+-Name[ca@valencia]=Plastik
+-Name[cs]=Plastik
+-Name[csb]=Plastik
+-Name[cy]=Plastik
+-Name[da]=Plastik
+-Name[de]=Plastik
+-Name[el]=Plastik
+-Name[en_GB]=Plastik
+-Name[eo]=Plastik
+-Name[es]=Plastik
+-Name[et]=Plastik
+-Name[eu]=Plastik
+-Name[fa]=پلاستیک
+-Name[fi]=Plastik
+-Name[fr]=Plastik
+-Name[fy]=Plastyk
+-Name[ga]=Plastik
+-Name[gl]=Plastik
+-Name[gu]=પ્લાસ્ટિક
+-Name[he]=Plastik
+-Name[hi]=प्लास्टिक
+-Name[hne]=प्लास्टिक
+-Name[hr]=Plastika
+-Name[hsb]=Plastik
+-Name[hu]=Plastik
+-Name[id]=Plastik
+-Name[is]=Plastik
+-Name[it]=Plastica
+-Name[ja]=Plastik
+-Name[ka]=Пластик
+-Name[kk]=Пластик
+-Name[km]=ប្ល៉ាស្ទិក
+-Name[kn]=ಪ್ಲಾಸ್ಟಿಕ್
+-Name[ko]=Plastik
+-Name[ku]=Plastik
+-Name[lt]=Plastikinis
+-Name[lv]=Plastik
+-Name[mai]=प्लास्टिक
+-Name[mk]=Пластик
+-Name[ml]=പ്ലാസ്റ്റിക്
+-Name[mr]=प्लास्टिक
+-Name[ms]=Plastik
+-Name[nb]=Plastik
+-Name[nds]=Plastik
+-Name[ne]=प्लास्टिक
+-Name[nl]=Plastik
+-Name[nn]=Plast
+-Name[pa]=ਪਲਾਸਟਿਕ
+-Name[pl]=Plastik
+-Name[pt]=Plastik
+-Name[pt_BR]=Plastik
+-Name[ro]=Plastic
+-Name[ru]=Пластик
+-Name[se]=Plastihkka
+-Name[si]=ප්ලාස්ටික්
+-Name[sk]=Plastik
+-Name[sl]=Plastik
+-Name[sr]=Пластика
+-Name[sr@ijekavian]=Пластика
+-Name[sr@ijekavianlatin]=Plastika
+-Name[sr@latin]=Plastika
+-Name[sv]=Plastik
+-Name[ta]=திட்டம்
+-Name[te]=ప్లాస్టిక్
+-Name[tg]=Пластик
+-Name[th]=รูปแบบพลาสติก
+-Name[tr]=Plastik
+-Name[uk]=Пластик
+-Name[uz]=Plastik
+-Name[uz@cyrillic]=Пластик
+-Name[vi]=Chất dẻo
+-Name[wa]=Plastike
+-Name[x-test]=xxPlastikxx
+-Name[zh_CN]=Plastik
+-Name[zh_TW]=Plastik
++Name=Plastik for Qubes!
+ X-KDE-Library=kwin3_plastik
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/plastik.h kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastik.h
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/plastik.h	2009-09-16 13:40:39.000000000 +0200
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/plastik.h	2010-06-03 14:47:48.056230251 +0200
+@@ -27,6 +27,7 @@
+ 
+ #include <kdecoration.h>
+ #include <kdecorationfactory.h>
++#include "qubeslabels.h"
+ 
+ namespace KWinPlastik {
+ 
+@@ -82,7 +83,7 @@ public:
+     virtual KDecoration* createDecoration( KDecorationBridge* );
+     virtual bool supports( Ability ability ) const;
+ 
+-    const QPixmap &pixmap(Pixmaps type, bool active, bool toolWindow);
++    const QPixmap &pixmap(const QubesLabel& qubes_label, Pixmaps type, bool active, bool toolWindow);
+     const QBitmap &buttonBitmap(ButtonIcon type, const QSize &size, bool toolWindow);
+ 
+     int  titleHeight() const { return m_titleHeight; }
+@@ -95,7 +96,7 @@ public:
+     bool menuClose() const { return m_menuClose; }
+     Qt::AlignmentFlag titleAlign() const { return m_titleAlign; }
+     bool reverseLayout() const { return m_reverse; }
+-    QColor getColor(KWinPlastik::ColorType type, const bool active = true);
++    QColor getColor(const QubesLabel& qubes_label, KWinPlastik::ColorType type, const bool active = true);
+ 
+     QList< PlastikHandler::BorderSize >  borderSizes() const;
+ private:
+@@ -114,7 +115,7 @@ private:
+     Qt::AlignmentFlag m_titleAlign;
+ 
+     // pixmap cache
+-    QPixmap *m_pixmaps[2][2][NumPixmaps]; // button pixmaps have normal+pressed state...
++    QPixmap *m_pixmaps[MAX_QUBES_LABELS][2][2][NumPixmaps]; // button pixmaps have normal+pressed state...
+     QBitmap *m_bitmaps[2][NumButtonIcons];
+ };
+ 
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/qubeslabels.cpp kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/qubeslabels.cpp
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/qubeslabels.cpp	1970-01-01 01:00:00.000000000 +0100
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/qubeslabels.cpp	2010-06-03 22:26:24.610842254 +0200
+@@ -0,0 +1,15 @@
++#include "plastik.h"
++
++QubesLabel QubesLabels[] = {
++    QubesLabel (QUBES_LABEL_DOM0, "dom0", QColor::fromHsv (0, 0, 220), Qt::black),
++    QubesLabel (QUBES_LABEL_RED, "red", QColor::fromHsv (0,200, 220)),
++    QubesLabel (QUBES_LABEL_ORANGE, "orange", QColor::fromHsv (30,255, 250), Qt::black, Qt::darkGray),
++    QubesLabel (QUBES_LABEL_YELLOW, "yellow", QColor::fromHsv (60,250, 220), Qt::black, Qt::darkGray),
++    QubesLabel (QUBES_LABEL_GREEN, "green", QColor::fromHsv (120,250, 200), Qt::black, Qt::darkGray),
++    QubesLabel (QUBES_LABEL_GRAY, "gray", QColor::fromHsv (0,0, 150), Qt::black),
++    QubesLabel (QUBES_LABEL_BLUE, "blue", QColor::fromHsv (220,200, 220)),
++    QubesLabel (QUBES_LABEL_PURPLE, "purple", QColor::fromHsv (300,255, 99)),
++    QubesLabel (QUBES_LABEL_BLACK, "black", QColor::fromHsv (0, 0, 0))
++};
++
++
+diff -rupP kdebase-workspace-4.4.3/kwin/clients/plastik/qubeslabels.h kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/qubeslabels.h
+--- kdebase-workspace-4.4.3/kwin/clients/plastik/qubeslabels.h	1970-01-01 01:00:00.000000000 +0100
++++ kdebase-workspace-4.4.3-qubes/kwin/clients/plastik/qubeslabels.h	2010-06-03 22:08:00.991978740 +0200
+@@ -0,0 +1,30 @@
++#ifndef QUBES_LABELS_H
++#define QUBES_LABELS_H
++
++class QubesLabel {
++public:
++    QubesLabel(int _index, const QString& _name, const QColor& _color, const QColor& active_text = Qt::white, const QColor& inactive_text = Qt::gray) :
++        name (_name), color (_color), color_text_active (active_text), color_text_inactive (inactive_text)  {
++            index = _index;
++        };
++
++    int index;
++    QString name;
++    QColor color, color_text_active, color_text_inactive;
++};
++
++extern QubesLabel QubesLabels[];
++
++#define QUBES_LABEL_DOM0 0
++#define QUBES_LABEL_RED 1
++#define QUBES_LABEL_ORANGE 2
++#define QUBES_LABEL_YELLOW 3
++#define QUBES_LABEL_GREEN 4
++#define QUBES_LABEL_GRAY 5
++#define QUBES_LABEL_BLUE 6
++#define QUBES_LABEL_PURPLE 7
++#define QUBES_LABEL_BLACK 8
++
++#define MAX_QUBES_LABELS 9
++
++#endif

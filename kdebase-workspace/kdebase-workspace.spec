@@ -1,4 +1,4 @@
-%define rel 2
+%define rel 3
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %define _unpackaged_files_terminate_build 0
@@ -39,6 +39,7 @@ Patch21: kdebase-workspace-4.3.98-platformplugin-widgetstyle4.patch
 # Qubes Patches:
 
 Patch100: kdebase-workspace-4.4.3-qubes-cleanup.patch
+Patch101: kdebase-workspace-4.4.3-plastik-for-qubes.patch
 
 ###############################################################
 #BuildRequires: akonadi-devel
@@ -145,6 +146,7 @@ BuildArch: noarch
 %patch21 -p1 -b .platformplugin-widgetstyle4
 
 %patch100 -p1 -b .qubes-cleanup
+%patch101 -p1 -b .qubes-plastik
 %build
 
 mkdir -p %{_target_platform}

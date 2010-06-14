@@ -56,6 +56,20 @@ mrproper: clean
 	done
 	-rm -fr rpm/* srpm/*
 
+update-repo:
+	ln -f rpm/x86_64/*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1/dom0/rpm/
+
+update-repo-testing:
+	ln -f rpm/x86_64/*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1-testing/dom0/rpm/
+
+
+
 help:
 	@echo "Usage: make <target>"
 	@echo
@@ -65,5 +79,8 @@ help:
 	@echo "rpms            Build all rpms"
 	@echo "srpms           Create all srpms"
 	@echo "all             get-sources verify-sources rpms srpms"
+	@echo
+	@echo "update-repo     copy newly generated rpms to qubes yum repo"
+	@echo "update-repo-testing -- same, but to -testing repo"
 	@echo
 

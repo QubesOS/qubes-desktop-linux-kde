@@ -9,7 +9,7 @@ Epoch:   1000
 License: Public Domain
 BuildArch: noarch
 
-Source: kde-settings-%{version}-%{rel}.tar.bz2
+Source: kde-settings.tar.bz2
 BuildRequires: kde-filesystem
 
 Requires: kde-filesystem
@@ -33,7 +33,7 @@ Requires: xterm
 %{summary}.
 
 %prep
-%setup -q -n %{name}-%{version}-%{rel}
+%setup -q -n %{name}
 
 %build
 # Intentionally left blank.  Nothing to see here.

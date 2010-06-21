@@ -39,7 +39,7 @@ rpms: get-sources
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir rpms || exit 1;\
 	done
-	rpm --addsign $(RPMDIR)/*/*.rpm
+	rpm --addsign rpm/*/*.rpm
 
 srpms: get-sources
 	@for dir in $(SUBDIRS); do \

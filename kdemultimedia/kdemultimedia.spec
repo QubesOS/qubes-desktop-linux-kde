@@ -44,7 +44,7 @@ Requires: kdebase-workspace >= %{version}
 %prep
 %setup -q -n kdemultimedia-%{version}
 
-%patch3 -p1 -b .kmix-pulse
+#%patch3 -p1 -b .kmix-pulse
 
 %patch100 -p1 -b .qubes-cleanup
 

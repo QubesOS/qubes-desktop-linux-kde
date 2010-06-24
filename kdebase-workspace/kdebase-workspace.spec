@@ -159,8 +159,8 @@ pushd %{_target_platform}
 popd
 
 # FIXME: not smp-safe?
-make -C %{_target_platform}
-#make %{?_smp_mflags} -C %{_target_platform}
+#make -C %{_target_platform}
+make %{?_smp_mflags} -C %{_target_platform}
 
 %install
 rm -rf $RPM_BUILD_ROOT

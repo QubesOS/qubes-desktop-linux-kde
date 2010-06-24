@@ -20,7 +20,7 @@ RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
 		--define "_srcrpmdir $(SRCRPMDIR)" \
 		--define "_rpmdir $(RPMDIR)" \
 		--define "version $(VERSION)" \
-		--define "_default_patch_fuzz 10"
+		--define "_default_patch_fuzz 3"
 
 VER_REL := $(shell rpm $(RPM_DEFINES) -q --qf "%{VERSION} %{RELEASE}\n" --specfile $(SPECFILE)| head -1)
 

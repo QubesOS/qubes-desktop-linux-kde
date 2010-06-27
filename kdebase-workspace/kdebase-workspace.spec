@@ -1,4 +1,4 @@
-%define rel 3
+%define rel 4
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %define _unpackaged_files_terminate_build 0
@@ -146,7 +146,12 @@ BuildArch: noarch
 %patch21 -p1 -b .platformplugin-widgetstyle4
 
 %patch100 -p1 -b .qubes-cleanup
-%patch101 -p1 -b .qubes-plastik
+
+
+rm -fr %_sourcedir/kdebase-workspace-%{version}/kwin/clients/plastik
+ln -sf %_sourcedir/../plastik-for-qubes %_sourcedir/kdebase-workspace-%{version}/kwin/clients/plastik
+
+
 %build
 
 mkdir -p %{_target_platform}

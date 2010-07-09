@@ -55,9 +55,12 @@ ifneq ($(SRC_FILE), None)
 	@echo "OK."
 endif
 
+.PHONY: verify-sources
+
 verify-sources:
 # This is a temporary hack, until KDE project starts properly signing their tarballs...
 ifneq ($(SRC_FILE), None)
+	@echo "Veryfing sources for $(NAME)..."
 	@md5sum -c sources-$(VERSION)
 endif
 

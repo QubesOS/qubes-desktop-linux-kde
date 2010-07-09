@@ -1,5 +1,11 @@
 default: help
-SUBDIRS := kde-filesystem kde-settings kdelibs kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme kdemultimedia qubes-kde-dom0
+
+VERSION := $(shell cat version)
+
+SUBDIRS_STAGE1 := kde-filesystem kde-settings kdelibs
+SUBDIRS_STAGE2 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0
+SUBDIRS_STAGE3 := kdemultimedia
+SUBDIRS:= $(SUBDIRS_STAGE1) $(SUBDIRS_STAGE2) $(SUBDIRS_STAGE3)
 
 .PHONY: verify-sources get-sources clean-sources clean
 
@@ -9,6 +15,7 @@ SUBDIRS := kde-filesystem kde-settings kdelibs kdebase-workspace kdebase-runtime
 all: get-sources verify-sources prep rpms srpms
 
 verify-sources:
+	@echo "Veryfing sources..."
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -s -C $$dir verify-sources || exit 1;\
 	done
@@ -30,15 +37,42 @@ clean-sources:
 # Ok, one problem is with the kdebase-workspace package that
 # cannot be built with SMP flag -- most likely a bug  in dependencies -- joanna
 
-prep: get-sources
-	@for dir in $(SUBDIRS); do \
+prep1:
+	@for dir in $(SUBDIRS_STAGE1); do \
 		$(MAKE) -C $$dir prep || exit 1;\
 	done
 
-rpms: get-sources
-	@for dir in $(SUBDIRS); do \
+prep2:
+	@for dir in $(SUBDIRS_STAGE2); do \
+		$(MAKE) -C $$dir prep || exit 1;\
+	done
+
+prep3:
+	@for dir in $(SUBDIRS_STAGE3); do \
+		$(MAKE) -C $$dir prep || exit 1;\
+	done
+
+prep: get-sources verify-sources prep1 prep2 prep3
+
+rpms_stage1_completed:
+	@for dir in $(SUBDIRS_STAGE1); do \
 		$(MAKE) -C $$dir rpms || exit 1;\
 	done
+	@touch rpms_stage1_completed
+
+rpms_stage2_completed:
+	@for dir in $(SUBDIRS_STAGE2); do \
+		$(MAKE) -C $$dir rpms || exit 1;\
+	done
+	@touch rpms_stage2_completed
+
+rpms_stage3_completed:
+	@for dir in $(SUBDIRS_STAGE3); do \
+		$(MAKE) -C $$dir rpms || exit 1;\
+	done
+	@touch rpms_stage3_completed
+
+rpms: get-sources verify-sources rpms_stage1_completed rpms_stage2_completed rpms_stage3_completed
 	rpm --addsign rpm/*/*.rpm
 
 srpms: get-sources
@@ -50,6 +84,7 @@ clean:
 	-@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir clean ;\
 	done
+	-rm -f rpms_stage*_completed
 
 mrproper: clean
 	-@for dir in $(SUBDIRS); do \
@@ -61,12 +96,14 @@ update-repo:
 	ln -f rpm/x86_64/*.rpm ../yum/r1/dom0/rpm/
 	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1/dom0/rpm/
 	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/kdebase-runtime-flags-*.rpm ../yum/r1/dom0/rpm/
 	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1/dom0/rpm/
 
 update-repo-testing:
 	ln -f rpm/x86_64/*.rpm ../yum/r1-testing/dom0/rpm/
 	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1-testing/dom0/rpm/
 	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/kdebase-runtime-flags-*.rpm ../yum/r1-testing/dom0/rpm/
 	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1-testing/dom0/rpm/
 
 

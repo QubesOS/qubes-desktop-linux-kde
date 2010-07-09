@@ -1,4 +1,4 @@
-%define rel 1
+%define rel 2
 
 Summary: KDE Libraries
 Version: %{version}
@@ -168,25 +168,6 @@ mv $RPM_BUILD_ROOT%{_kde4_sysconfdir}/xdg/menus/applications.menu \
 # create/own, see http://bugzilla.redhat.com/483318
 mkdir -p $RPM_BUILD_ROOT%{_kde4_libdir}/kconf_update_bin
 
-# move devel symlinks
-mkdir -p %{buildroot}%{_kde4_libdir}/kde4/devel
-pushd %{buildroot}%{_kde4_libdir}
-for i in lib*.so
-do
-  case "$i" in
-    libkdeinit4_*.so)
-      ;;
-    ## FIXME/TODO: imo, should leave everything except for known-conflicts -- Rex
-    *)
-      linktarget=`readlink "$i"`
-      rm -f "$i"
-      ln -sf "../../$linktarget" "kde4/devel/$i"
-      ;;
-  esac
-done
-popd
-
-
 install -p -m 644 -D %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/kde4.sh
 install -p -m 644 -D %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/kde4.csh
 
@@ -286,7 +267,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_kde4_appsdir}/cmake/
 %{_kde4_appsdir}/kdewidgets/
 %{_kde4_includedir}/*
-%{_kde4_libdir}/kde4/devel/
 
 
 

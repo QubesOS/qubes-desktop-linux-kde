@@ -48,8 +48,6 @@ Patch101: kdebase-workspace-4.4.3-plastik-for-qubes.patch
 BuildRequires: desktop-file-utils
 
 BuildRequires: glib2-devel
-BuildRequires: kdelibs4-devel >= %{version}
-#BuildRequires: kdepimlibs-devel >= %{version}
 BuildRequires: libutempter-devel
 BuildRequires: libxklavier-devel
 BuildRequires: libXau-devel
@@ -64,6 +62,8 @@ BuildRequires: pam-devel
 BuildRequires: qimageblitz-devel
 BuildRequires: soprano-devel
 BuildRequires: python-devel
+BuildRequires: kdelibs4 >= %{version}
+BuildRequires: kdelibs4-devel >= %{version}
 
 Requires: kdebase-runtime >= %{version}
 

@@ -38,7 +38,7 @@ Patch21: kdebase-workspace-4.3.98-platformplugin-widgetstyle4.patch
 ###############################################################
 # Qubes Patches:
 
-Patch100: kdebase-workspace-4.4.3-qubes-cleanup.patch
+Patch100: kdebase-workspace-4.4.5-qubes-cleanup.patch
 Patch101: kdebase-workspace-4.4.3-plastik-for-qubes.patch
 
 ###############################################################
@@ -139,7 +139,7 @@ BuildArch: noarch
 
 %patch9 -p1 -b .rootprivs
 %patch11 -p1 -b .font
-%patch13 -p1 -b .pykde4
+#%patch13 -p1 -b .pykde4
 %patch18 -p1 -b .kdm_plymouth
 #%patch19 -p1 -b .kdm_plymouth
 %patch20 -p1 -b .xsession_errors_O_APPEND

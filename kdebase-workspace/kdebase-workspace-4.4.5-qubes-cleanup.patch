@@ -10,7 +10,7 @@
  
 --- kdebase-workspace-4.4.3-orig/plasma/generic/dataengines/CMakeLists.txt	2009-09-16 13:40:54.000000000 +0200
 +++ kdebase-workspace-4.4.3/plasma/generic/dataengines/CMakeLists.txt	2010-05-27 18:26:53.915449934 +0200
-@@ -1,10 +1,7 @@
+@@ -1,33 +1,14 @@
  add_subdirectory(applicationjobs)
  add_subdirectory(apps)
 -add_subdirectory(dict)
@@ -21,7 +21,9 @@
  add_subdirectory(hotplug)
  add_subdirectory(keystate)
  add_subdirectory(network)
-@@ -14,20 +11,6 @@ add_subdirectory(places)
+ add_subdirectory(notifications)
+-add_subdirectory(nowplaying)
+-add_subdirectory(places)
  add_subdirectory(powermanagement)
  add_subdirectory(soliddevice)
  add_subdirectory(time)

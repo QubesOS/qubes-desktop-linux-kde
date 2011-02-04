@@ -89,7 +89,7 @@ The KDE Workspace for Qubes Dom0.
 %package devel
 Summary:  Development files for %{name}
 Provides: solid-bluetooth-devel = %{version}-%{release} 
-Requires: %{name}-libs%{?_isa} = %{version}-%{release}
+Requires: %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
 Requires: kdelibs4-devel
 %description devel
 %{summary}.

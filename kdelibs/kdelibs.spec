@@ -77,6 +77,7 @@ BuildRequires: automoc4 >= 0.9.88
 BuildRequires: avahi-devel
 BuildRequires: bison flex
 BuildRequires: bzip2-devel
+BuildRequires: gcc-c++
 BuildRequires: cmake >= 2.6.4
 BuildRequires: cups-devel cups
 BuildRequires: enchant-devel
@@ -100,7 +101,7 @@ BuildRequires: qca2-devel
 #BuildRequires: shared-desktop-ontologies-devel
 #BuildRequires: shared-mime-info
 #BuildRequires: soprano-devel >= %{soprano_ver} 
-#BuildRequires: strigi-devel >= %{strigi_ver} 
+BuildRequires: strigi-devel >= %{strigi_ver} 
 BuildRequires: xz-devel
 BuildRequires: zlib-devel
 # extra X deps (seemingly needed and/or checked-for by most kde4 buildscripts)

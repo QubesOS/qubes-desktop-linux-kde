@@ -20,7 +20,7 @@
 Summary: KDE filesystem layout
 Name: kde-filesystem
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 License: Public Domain

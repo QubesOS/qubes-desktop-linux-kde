@@ -3,7 +3,7 @@
 Name:    kdebase
 Summary: KDE Core Files
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 

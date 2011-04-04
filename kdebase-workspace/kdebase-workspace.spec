@@ -5,7 +5,7 @@
 Summary: KDE Workspace for Qubes Dom0
 Name:    kdebase-workspace
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 License: GPLv2

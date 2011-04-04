@@ -3,7 +3,7 @@
 Name:       kdebase-runtime
 Summary:    KDE Runtime
 Version:    %{version}
-Release:    %{rel}.qubes
+Release:    %{rel}.qbs1
 Epoch:      1000
 
 # http://techbase.kde.org/Policies/Licensing_Policy

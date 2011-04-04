@@ -3,7 +3,7 @@
 Name:          oxygen-icon-theme
 Summary:       Oxygen icon theme
 Version:       %{version}
-Release:       %{rel}.qubes
+Release:       %{rel}.qbs1
 Epoch:         1000
 
 # http://techbase.kde.org/Policies/Licensing_Policy

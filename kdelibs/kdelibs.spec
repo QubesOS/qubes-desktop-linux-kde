@@ -2,7 +2,7 @@
 
 Summary: KDE Libraries
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 Name: kdelibs

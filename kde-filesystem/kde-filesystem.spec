@@ -1,5 +1,3 @@
-%define rel 1
-
 
 %define _kde4_prefix %_prefix
 %define _kde4_sysconfdir %_sysconfdir

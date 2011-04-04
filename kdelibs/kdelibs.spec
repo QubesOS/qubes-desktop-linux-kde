@@ -1,5 +1,3 @@
-%define rel 2
-
 Summary: KDE Libraries
 Version: %{version}
 Release: %{rel}.qubes

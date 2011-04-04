@@ -1,5 +1,3 @@
-%define rel 1
-
 Name:          oxygen-icon-theme
 Summary:       Oxygen icon theme
 Version:       %{version}

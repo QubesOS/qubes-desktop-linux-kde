@@ -1,6 +1,7 @@
 default: help
 
 VERSION := $(shell cat version)
+REL := $(shell cat rel)
 
 SUBDIRS_STAGE1 := kde-filesystem kde-settings kdelibs
 SUBDIRS_STAGE2 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0
@@ -73,7 +74,7 @@ rpms_stage3_completed:
 	@touch rpms_stage3_completed
 
 rpms: get-sources verify-sources rpms_stage1_completed rpms_stage2_completed rpms_stage3_completed
-	rpm --addsign rpm/*/*.rpm
+	rpm --addsign rpm/*/*$(VERSION)-$(REL)*.rpm
 
 srpms: get-sources
 	@for dir in $(SUBDIRS); do \
@@ -92,21 +93,13 @@ mrproper: clean
 	done
 	-rm -fr rpm/* srpm/*
 
-update-repo:
-	ln -f rpm/x86_64/*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1/dom0/rpm/
+update-repo-current:
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/current-release/current/dom0/rpm/
+	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/current-release/current/dom0/rpm/
 
-update-repo-testing:
-	ln -f rpm/x86_64/*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1-testing/dom0/rpm/
-
-
+update-repo-unstable:
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/current-release/unstable/dom0/rpm/
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/current-release/unstable/dom0/rpm/
 
 help:
 	@echo "Usage: make <target>"
@@ -118,7 +111,9 @@ help:
 	@echo "srpms           Create all srpms"
 	@echo "all             get-sources verify-sources rpms srpms"
 	@echo
-	@echo "update-repo     copy newly generated rpms to qubes yum repo"
-	@echo "update-repo-testing -- same, but to -testing repo"
+	@echo "make update-repo-current  -- copy newly generated rpms to qubes yum repo"
+	@echo "make update-repo-unstable -- same, but to -unstable repo"
+
+
 	@echo
 

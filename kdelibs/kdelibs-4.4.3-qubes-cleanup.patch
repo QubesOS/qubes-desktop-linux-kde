@@ -53,11 +53,3 @@
  add_subdirectory( kfile )
  add_subdirectory( kconf_update )
  add_subdirectory( kdoctools  )
-@@ -277,7 +248,6 @@ add_subdirectory( kross )
- add_subdirectory( security )
- add_subdirectory( plasma )
- add_subdirectory( kunitconversion )
--add_subdirectory( kdewebkit )
- add_subdirectory( includes )
- 
- macro_optional_add_subdirectory( doc  )

@@ -15,6 +15,7 @@ Source0: kdelibs-%{version}.tar.bz2
 
 BuildRequires: kde4-macros(api) >= 2
 BuildRequires: kde-filesystem >= 4-23
+BuildRequires: attica-devel
 
 Requires: hicolor-icon-theme
 Requires: kde-filesystem >= 4-23

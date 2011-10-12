@@ -2,32 +2,19 @@ default: help
 
 VERSION := $(shell cat version)
 
-SUBDIRS_STAGE1 := kde-filesystem kde-settings kdelibs
-SUBDIRS_STAGE2 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0
-SUBDIRS_STAGE3 := kdemultimedia
-SUBDIRS:= $(SUBDIRS_STAGE1) $(SUBDIRS_STAGE2) $(SUBDIRS_STAGE3)
+SUBDIRS_STAGE1 := kde-filesystem
+SUBDIRS_STAGE2 := kde-settings kdelibs
+SUBDIRS_STAGE3 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0
+SUBDIRS_STAGE4 := kdemultimedia
+SUBDIRS:= $(SUBDIRS_STAGE1) $(SUBDIRS_STAGE2) $(SUBDIRS_STAGE3) $(SUBDIRS_STAGE4)
 
 .PHONY: verify-sources get-sources clean-sources clean
 
-# TODO: there should really be a more elegant way for coding this
-# instead od repeating the for loop in each target... Anybody?
-
 all: get-sources verify-sources prep rpms srpms
 
-verify-sources:
-	@echo "Veryfing sources..."
+verify-sources get-sources clean-sources:
 	@for dir in $(SUBDIRS); do \
-		$(MAKE) -s -C $$dir verify-sources || exit 1;\
-	done
-
-get-sources:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -s -C $$dir get-sources || exit 1;\
-	done
-
-clean-sources:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -s -C $$dir rm-sources || exit 1;\
+		$(MAKE) -s -C $$dir $@ || exit 1;\
 	done
 
 # Even though we're serializing the builds here, I don't think we're losing
@@ -37,42 +24,20 @@ clean-sources:
 # Ok, one problem is with the kdebase-workspace package that
 # cannot be built with SMP flag -- most likely a bug  in dependencies -- joanna
 
-prep1:
-	@for dir in $(SUBDIRS_STAGE1); do \
+prep%:
+	@for dir in $($(subst prep,SUBDIRS_STAGE,$@)); do \
 		$(MAKE) -C $$dir prep || exit 1;\
 	done
 
-prep2:
-	@for dir in $(SUBDIRS_STAGE2); do \
-		$(MAKE) -C $$dir prep || exit 1;\
-	done
+prep: get-sources verify-sources prep1 prep2 prep3 prep4
 
-prep3:
-	@for dir in $(SUBDIRS_STAGE3); do \
-		$(MAKE) -C $$dir prep || exit 1;\
-	done
-
-prep: get-sources verify-sources prep1 prep2 prep3
-
-rpms_stage1_completed:
-	@for dir in $(SUBDIRS_STAGE1); do \
+rpms_stage_completed%:
+	@for dir in $($(subst rpms_stage_completed,SUBDIRS_STAGE,$@)); do \
 		$(MAKE) -C $$dir rpms || exit 1;\
 	done
-	@touch rpms_stage1_completed
+	@touch $@
 
-rpms_stage2_completed:
-	@for dir in $(SUBDIRS_STAGE2); do \
-		$(MAKE) -C $$dir rpms || exit 1;\
-	done
-	@touch rpms_stage2_completed
-
-rpms_stage3_completed:
-	@for dir in $(SUBDIRS_STAGE3); do \
-		$(MAKE) -C $$dir rpms || exit 1;\
-	done
-	@touch rpms_stage3_completed
-
-rpms: get-sources verify-sources rpms_stage1_completed rpms_stage2_completed rpms_stage3_completed
+rpms: get-sources verify-sources rpms_stage_completed1 rpms_stage_completed2 rpms_stage_completed3 rpms_stage_completed4
 	rpm --addsign rpm/*/*.rpm
 
 srpms: get-sources
@@ -84,7 +49,7 @@ clean:
 	-@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir clean ;\
 	done
-	-rm -f rpms_stage*_completed
+	-rm -f rpms_stage_completed*
 
 mrproper: clean
 	-@for dir in $(SUBDIRS); do \

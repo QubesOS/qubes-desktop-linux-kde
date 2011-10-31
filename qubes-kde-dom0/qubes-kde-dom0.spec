@@ -39,11 +39,17 @@ Requires: dejavu-sans-fonts
 # This should be left to the user IMO
 #Requires: knetworkmanager
 
+Source0: kfileplaces-bookmarks.xml
+
 %description
 %{summary}.
 
+%install
+install -D %{SOURCE0} %{buildroot}%{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
+
 %files
 %defattr (-,root,root,-)
+%{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
 %changelog
 * Mon May 24 2010 Joanna Rutkowska <joanna@invisiblethingslab.com>
 - spec file adapted to Qubes OS (based on Fedora spec)

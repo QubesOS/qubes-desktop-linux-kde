@@ -1,9 +1,7 @@
-%define rel 1
-
 Summary: Config files for KDE in Qubes Dom0
 Name:    kde-settings
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 License: Public Domain
@@ -17,6 +15,11 @@ Requires: oxygen-icon-theme
 Requires: xdg-user-dirs
 Requires: coreutils
 Provides: kde-settings-dom0
+
+###############################################################
+# Qubes Patches:
+Patch100: kde-settings-4.4.5-plastik-for-qubes.patch
+###############################################################
 
 %description
 %{summary}.
@@ -34,6 +37,7 @@ Requires: xterm
 
 %prep
 %setup -q -n %{name}
+%patch100 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

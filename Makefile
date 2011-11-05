@@ -1,6 +1,7 @@
 default: help
 
 VERSION := $(shell cat version)
+REL := $(shell cat rel)
 
 SUBDIRS_STAGE1 := kde-filesystem
 SUBDIRS_STAGE2 := kde-settings kdelibs
@@ -38,7 +39,7 @@ rpms_stage_completed%:
 	@touch $@
 
 rpms: get-sources verify-sources rpms_stage_completed1 rpms_stage_completed2 rpms_stage_completed3 rpms_stage_completed4
-	rpm --addsign rpm/*/*.rpm
+	rpm --addsign rpm/*/*$(VERSION)-$(REL)*.rpm
 
 srpms: get-sources
 	@for dir in $(SUBDIRS); do \
@@ -89,7 +90,7 @@ help:
 	@echo "srpms           Create all srpms"
 	@echo "all             get-sources verify-sources rpms srpms"
 	@echo
-	@echo "update-repo     copy newly generated rpms to qubes yum repo"
-	@echo "update-repo-testing -- same, but to -testing repo"
+
+
 	@echo
 

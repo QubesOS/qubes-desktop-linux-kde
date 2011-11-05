@@ -115,7 +115,7 @@
     add_subdirectory(systemtray)
 --- kdebase-workspace-4.4.3-orig/kwin/clients/CMakeLists.txt	2009-11-21 10:44:29.000000000 +0100
 +++ kdebase-workspace-4.4.3/kwin/clients/CMakeLists.txt	2010-06-03 00:15:42.720697680 +0200
-@@ -1,13 +1,3 @@
+@@ -1,13 +1,2 @@
  
  add_subdirectory( plastik ) 
 -add_subdirectory( aurorae )
@@ -124,7 +124,7 @@
 -add_subdirectory( keramik ) 
 -add_subdirectory( laptop ) 
 -add_subdirectory( modernsystem ) 
- add_subdirectory( oxygen ) 
+-add_subdirectory( oxygen ) 
 -add_subdirectory( quartz ) 
 -add_subdirectory( redmond ) 
 -add_subdirectory( web ) 

@@ -1,4 +1,3 @@
-%define rel 4
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
 %define _unpackaged_files_terminate_build 0
@@ -6,7 +5,7 @@
 Summary: KDE Workspace for Qubes Dom0
 Name:    kdebase-workspace
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 License: GPLv2

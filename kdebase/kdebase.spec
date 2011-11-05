@@ -1,10 +1,9 @@
-%define rel 1
 %define _unpackaged_files_terminate_build 0
 
 Name:    kdebase
 Summary: KDE Core Files
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 

@@ -58,20 +58,26 @@ mrproper: clean
 	-rm -fr rpm/* srpm/*
 
 update-repo:
-	ln -f rpm/x86_64/*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/x86_64/*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/kde-filesystem-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
 
 update-repo-testing:
-	ln -f rpm/x86_64/*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/x86_64/*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/kde-filesystem-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
 
-
+update-repo-installer:
+	ln -f rpm/x86_64/*$(VERSION)*.rpm ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/kde-filesystem-*$(VERSION)*.rpm ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm  ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/oxygen-icon-theme-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
 
 help:
 	@echo "Usage: make <target>"

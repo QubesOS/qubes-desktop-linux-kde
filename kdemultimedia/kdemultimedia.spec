@@ -1,10 +1,9 @@
-%define rel 2
 %define _unpackaged_files_terminate_build 0
 
 Name:    kdemultimedia
 Summary: KDE sound support for Qubes Dom0
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 # see also: http://techbase.kde.org/Policies/Licensing_Policy

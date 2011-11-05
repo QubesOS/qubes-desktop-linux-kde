@@ -1,5 +1,3 @@
-%define rel 1
-
 
 %define _kde4_prefix %_prefix
 %define _kde4_sysconfdir %_sysconfdir
@@ -22,7 +20,7 @@
 Summary: KDE filesystem layout
 Name: kde-filesystem
 Version: %{version}
-Release: %{rel}.qubes
+Release: %{rel}.qbs1
 Epoch:   1000
 
 License: Public Domain

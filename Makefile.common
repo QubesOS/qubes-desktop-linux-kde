@@ -38,7 +38,7 @@ endif
 
 all: help
 
-SRC_BASEURL := ftp://ftp.kde.org/pub/kde/stable/${VERSION}/src/
+SRC_BASEURL := ftp://ftp.kde.org/pub/kde/Attic/${VERSION}/src/
 
 ifndef SRC_FILE
 	SRC_FILE := $(NAME)-$(VERSION).tar.bz2

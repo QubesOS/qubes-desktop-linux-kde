@@ -1,0 +1,25 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+
+<Menu>
+
+  <Name>Documentation</Name>
+  <Directory>Documentation.directory</Directory>
+
+  <!-- Read standard .directory and .desktop file locations -->
+  <DefaultAppDirs/>
+  <DefaultDirectoryDirs/>
+
+  <!-- No 1-element subdirectories, please -->
+  <DefaultLayout inline="true" inline_limit="1"><Merge type="all"/></DefaultLayout>
+
+  <!-- toplevel menu items -->
+
+  <Include>
+    <And>
+      <Category>X-Red-Hat-Base</Category>
+      <Category>Documentation</Category>
+    </And>
+  </Include>
+
+</Menu>     <!-- End Documentation -->

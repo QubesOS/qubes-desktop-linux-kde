@@ -1,0 +1,32 @@
+<!DOCTYPE Menu PUBLIC '-//freedesktop//DTD Menu 1.0//EN' 'http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd'>
+<Menu>
+  <Name>Applications</Name>
+  <Directory>X-GNOME-Menu-Applications.directory</Directory>
+
+  <!-- Scan legacy dirs first, as later items take priority -->
+  <LegacyDir>/usr/share/gnome/apps</LegacyDir>
+  <LegacyDir>/etc/X11/applnk</LegacyDir>
+
+  <!-- Read standard .directory and .desktop file locations -->
+  <KDELegacyDirs/>
+  <DefaultAppDirs/>
+  <DefaultDirectoryDirs/>
+
+  <!-- Add stock tarball installs to menus -->
+  <AppDir>/usr/local/share/applications</AppDir>
+
+  <Menu>
+    <Name>System Tools</Name>
+    <Directory>System-Tools.directory</Directory>
+    <OnlyUnallocated/>
+    <Include>
+      <All/>
+    </Include>
+  </Menu>
+
+  <!-- Allow user customization -->
+  <MergeFile>applications-kmenuedit.menu</MergeFile>
+
+  <!-- Read in overrides and child menus from applications.d -->
+  <DefaultMergeDirs/>
+</Menu> <!-- End Applications -->

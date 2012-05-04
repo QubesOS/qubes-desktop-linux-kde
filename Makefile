@@ -5,7 +5,7 @@ REL := $(shell cat rel)
 
 SUBDIRS_STAGE1 := kde-filesystem
 SUBDIRS_STAGE2 := kde-settings kdelibs
-SUBDIRS_STAGE3 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0
+SUBDIRS_STAGE3 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0 qubes-menus
 SUBDIRS_STAGE4 := kdemultimedia
 SUBDIRS:= $(SUBDIRS_STAGE1) $(SUBDIRS_STAGE2) $(SUBDIRS_STAGE3) $(SUBDIRS_STAGE4)
 
@@ -64,6 +64,7 @@ update-repo:
 	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
 	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
 	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/dom0/rpm/
 
 update-repo-testing:
 	ln -f rpm/x86_64/*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
@@ -71,6 +72,7 @@ update-repo-testing:
 	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
 	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
 	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1-testing/dom0/rpm/
 
 update-repo-installer:
 	ln -f rpm/x86_64/*$(VERSION)*.rpm ../installer/yum/qubes-dom0/rpm/
@@ -78,6 +80,7 @@ update-repo-installer:
 	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm  ../installer/yum/qubes-dom0/rpm/
 	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
 	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/qubes-menus-*.rpm   ../installer/yum/qubes-dom0/rpm/
 	ln -f rpm/noarch/oxygen-icon-theme-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
 
 help:

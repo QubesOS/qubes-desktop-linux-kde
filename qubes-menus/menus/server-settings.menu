@@ -1,0 +1,42 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+
+<Menu>
+
+  <Name>Server</Name>
+  <Directory>ServerConfig.directory</Directory>
+
+  <!-- Scan legacy dirs first, as later items take priority -->
+  <LegacyDir>/usr/share/gnome/apps</LegacyDir>
+  <LegacyDir>/etc/X11/applnk</LegacyDir>
+
+  <!-- Read standard .directory and .desktop file locations -->
+  <DefaultAppDirs/>
+  <DefaultDirectoryDirs/>
+
+  <!-- Read in overrides and child menus from applications.d -->
+  <DefaultMergeDirs/>
+
+  <!-- toplevel menu items -->
+  <Include>
+    <And>
+      <Category>X-Red-Hat-Base</Category>
+      <Category>X-Red-Hat-ServerConfig</Category>
+    </And>
+  </Include>
+
+  <!-- More Server -->
+  <Menu>
+    <Name>MoreServer</Name>
+    <Directory>ServerConfig-More.directory</Directory>
+    <Include>
+      <And>
+        <Not><Category>X-Red-Hat-Base-Only</Category></Not>
+        <Not><Category>X-Red-Hat-Base</Category></Not>
+        <Category>X-Red-Hat-ServerConfig</Category>
+      </And>
+    </Include>
+
+  </Menu> <!-- End More Server Settings -->
+</Menu>   <!-- End Server Settings -->
+

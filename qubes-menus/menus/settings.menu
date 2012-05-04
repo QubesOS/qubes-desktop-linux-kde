@@ -1,0 +1,48 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+
+<Menu>
+
+  <Name>Settings</Name>
+  <Directory>Desktop.directory</Directory>
+
+  <!-- Scan legacy dirs first, as later items take priority -->
+  <LegacyDir>/etc/X11/applnk</LegacyDir>
+  <LegacyDir>/usr/share/gnome/apps</LegacyDir>
+
+  <!-- Read standard .directory and .desktop file locations -->
+  <DefaultAppDirs/>
+  <DefaultDirectoryDirs/>
+
+  <!-- Read in overrides and child menus from applications-merged/ -->
+  <DefaultMergeDirs/>
+
+  <!-- Keep Preferences first -->
+  <Layout>
+    <Menuname>Preferences</Menuname>
+    <Menuname>Administration</Menuname>
+    <Menuname>Documentation</Menuname>
+  </Layout>
+
+  <!-- Merge in these other files as submenus -->
+  <Menu>
+    <Name>Preferences</Name>
+    <MergeFile>preferences.menu</MergeFile>
+    <MergeDir>preferences-post-merged</MergeDir>
+  </Menu>
+
+  <!-- System Settings -->
+  <Menu>
+    <Name>Administration</Name>
+    <Directory>SystemConfig.directory</Directory>
+    <MergeFile>system-settings.menu</MergeFile>
+  </Menu>     <!-- End System Settings -->
+
+  <!-- Documentation -->
+  <Menu>
+    <Name>Documentation</Name>
+    <Directory>Documentation.directory</Directory>
+    <MergeFile>documentation.menu</MergeFile>
+  </Menu>     <!-- End Documentation -->
+
+</Menu> <!-- End Applications -->

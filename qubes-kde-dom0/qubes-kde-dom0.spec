@@ -37,6 +37,9 @@ Requires: dejavu-sans-fonts
 # This should be left to the user IMO
 #Requires: knetworkmanager
 
+# Qubes-customized menus
+Requires: qubes-menus
+
 Source0: kfileplaces-bookmarks.xml
 
 %description

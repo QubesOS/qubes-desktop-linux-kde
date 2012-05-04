@@ -1,0 +1,42 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+
+<Menu>
+
+  <Name>Administration</Name>
+  <Directory>SystemConfig.directory</Directory>
+
+  <!-- Scan legacy dirs first, as later items take priority -->
+  <LegacyDir>/usr/share/gnome/apps</LegacyDir>
+  <LegacyDir>/etc/X11/applnk</LegacyDir>
+
+  <!-- Read standard .directory and .desktop file locations -->
+  <DefaultAppDirs/>
+  <DefaultDirectoryDirs/>
+
+  <!-- Read in overrides and child menus from applications.d -->
+  <DefaultMergeDirs/>
+
+  <!-- No 1-element subdirectories, please -->
+  <DefaultLayout inline="true" inline_limit="1">
+    <Merge type="all"/>
+  </DefaultLayout>
+
+  <!-- Merge in server settings -->
+  <Menu>
+    <Name>Server</Name>
+    <MergeFile>server-settings.menu</MergeFile>
+  </Menu>   <!-- End Server Settings -->
+
+  <!-- toplevel menu items -->
+
+  <Include>
+    <And>
+      <Category>Settings</Category>
+      <Category>System</Category>
+      <Not><Category>X-Red-Hat-ServerConfig</Category></Not>
+      <Not><Category>Screensaver</Category></Not>
+    </And>
+  </Include>
+
+</Menu>     <!-- End System Settings -->

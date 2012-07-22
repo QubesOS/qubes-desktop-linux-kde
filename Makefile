@@ -5,7 +5,7 @@ REL := $(shell cat rel)
 
 SUBDIRS_STAGE1 := kde-filesystem
 SUBDIRS_STAGE2 := kde-settings kdelibs
-SUBDIRS_STAGE3 := kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0 qubes-menus
+SUBDIRS_STAGE3 := kdelibs kdebase-workspace kdebase-runtime kdebase oxygen-icon-theme qubes-kde-dom0 qubes-menus
 SUBDIRS_STAGE4 := kdemultimedia
 SUBDIRS:= $(SUBDIRS_STAGE1) $(SUBDIRS_STAGE2) $(SUBDIRS_STAGE3) $(SUBDIRS_STAGE4)
 

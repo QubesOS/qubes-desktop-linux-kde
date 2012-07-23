@@ -94,6 +94,7 @@ fi
 %{_kde4_bindir}/kdialog
 %{_kde4_bindir}/konsole
 %{_kde4_bindir}/konsoleprofile
+%{_kde4_bindir}/kdepasswd
 %{_kde4_appsdir}/kbookmark/
 %{_kde4_appsdir}/kconf_update/*
 %{_kde4_appsdir}/konsole/
@@ -104,6 +105,7 @@ fi
 %{_kde4_datadir}/kde4/services/kded/*.desktop
 %{_kde4_datadir}/kde4/servicetypes/*.desktop
 %{_kde4_datadir}/applications/kde4/konsole.desktop
+%{_kde4_datadir}/applications/kde4/kdepasswd.desktop
 %{_kde4_libdir}/kde4/*.so
 %{_kde4_datadir}/templates/*.desktop
 %{_kde4_datadir}/templates/.source/*

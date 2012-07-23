@@ -59,29 +59,24 @@ mrproper: clean
 	-rm -fr rpm/* srpm/*
 
 update-repo:
-	ln -f rpm/x86_64/*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm ../yum/r1/dom0/rpm/
-	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/dom0/rpm/
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/r1/current/dom0/rpm/
+	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/r1/current/dom0/rpm/
+	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/current/dom0/rpm/
 
 update-repo-testing:
-	ln -f rpm/x86_64/*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm ../yum/r1-testing/dom0/rpm/
-	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1-testing/dom0/rpm/
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/r1/current-testing/dom0/rpm/
+	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/r1/current-testing/dom0/rpm/
+	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/current-testing/dom0/rpm/
+
+update-repo-unstable:
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/r1/unstable/dom0/rpm/
+	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/r1/unstable/dom0/rpm/
+	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/unstable/dom0/rpm/
 
 update-repo-installer:
-	ln -f rpm/x86_64/*$(VERSION)*.rpm ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/kde-filesystem-*$(VERSION)*.rpm ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/kde-settings-*$(VERSION)*.rpm  ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/kdebase-runtime-flags-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/qubes-kde-dom0-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../installer/yum/qubes-dom0/rpm/
+	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm   ../installer/yum/qubes-dom0/rpm/
 	ln -f rpm/noarch/qubes-menus-*.rpm   ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/oxygen-icon-theme-*$(VERSION)*.rpm   ../installer/yum/qubes-dom0/rpm/
 
 help:
 	@echo "Usage: make <target>"

@@ -49,10 +49,23 @@ mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/xdg/menus/settings-merged ||:
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-update-desktop-database %{_datadir}/applications
+%triggerin -- authconfig-gtk
+rm -f %{_datadir}/applications/authconfig.desktop
 
-%postun
+%triggerin -- gnome-packagekit
+rm -f %{_datadir}/applications/gpk-application.desktop
+rm -f %{_datadir}/applications/gpk-update-viewer.desktop
+
+%triggerin -- system-config-date
+rm -f %{_datadir}/applications/system-config-date.desktop
+
+%triggerin -- system-config-users
+rm -f %{_datadir}/applications/system-config-users.desktop
+
+%triggerin -- system-config-keyboard
+rm -f %{_datadir}/applications/system-config-keyboard.desktop
+
+%posttrans
 update-desktop-database %{_datadir}/applications
 
 %files

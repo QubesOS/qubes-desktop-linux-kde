@@ -1,0 +1,8 @@
+[Favorites]
+FavoriteURLs=/usr/share/applications/kde4/systemsettings.desktop,/usr/share/applications/qubes-manager.desktop
+
+[KRunner]
+loadAll=false
+
+[KRunner][PlasmaRunnerManager]
+pluginWhiteList=places,shell,services,bookmarks,recentdocuments,locations

@@ -19,15 +19,6 @@ URL:            http://www.kde.org/
 Source0:        ftp://ftp.kde.org/pub/kde/stable/%{version}/src/kdegraphics-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-## upstreamable patches
-# okular.desktop : Categories=-Office,+VectorGraphics (http://bugzilla.redhat.com/591089)
-Patch50: kdegraphics-4.5.1-okular_dt.patch
-# fix printing of landscape documents in Okular (#509645, kde#181290)
-# https://git.reviewboard.kde.org/r/101513/
-Patch54: kdegraphics-4.6.3-okular-landscape.patch
-
-## upstream patches
-
 ## Qubes patches
 Patch100: kdegraphics-4.4.5-qubes-cleanup.patch
 

@@ -1,0 +1,12 @@
+[ScreenSaver]
+ActionBottomLeft=0
+ActionBottomRight=0
+ActionTopLeft=0
+ActionTopRight=0
+Enabled=true
+Lock=true
+LockGrace=5000
+PlasmaEnabled=false
+Priority=19
+Saver=kblank.desktop
+Timeout=600

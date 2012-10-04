@@ -14,11 +14,13 @@ Requires: kde-filesystem
 Requires: oxygen-icon-theme
 Requires: xdg-user-dirs
 Requires: coreutils
+Requires: Xorg >= 1.10
 Provides: kde-settings-dom0
 
 ###############################################################
 # Qubes Patches:
 Patch100: kde-settings-4.4.5-plastik-for-qubes.patch
+Patch101: kde-settings-4.4.5-Xorg-1.10.patch
 ###############################################################
 
 %description
@@ -38,6 +40,7 @@ Requires: xterm
 %prep
 %setup -q -n %{name}
 %patch100 -p1
+%patch101 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

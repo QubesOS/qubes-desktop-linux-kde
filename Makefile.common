@@ -52,9 +52,7 @@ get-sources: $(SRC_FILE)
 
 $(SRC_FILE):
 ifneq ($(SRC_FILE), None)
-	@echo -n "Downloading $(URL)... "
 	@wget -q $(URL)
-	@echo "OK."
 endif
 
 .PHONY: verify-sources
@@ -62,8 +60,7 @@ endif
 verify-sources:
 # This is a temporary hack, until KDE project starts properly signing their tarballs...
 ifneq ($(SRC_FILE), None)
-	@echo "Veryfing sources for $(NAME)..."
-	@md5sum -c sources-$(VERSION)
+	@md5sum --quiet -c sources-$(VERSION)
 endif
 
 .PHONY: clean-sources

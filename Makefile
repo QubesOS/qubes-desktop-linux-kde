@@ -58,12 +58,12 @@ mrproper: clean
 	done
 	-rm -fr rpm/* srpm/*
 
-update-repo:
+update-repo-current:
 	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/r1/current/dom0/rpm/
 	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/r1/current/dom0/rpm/
 	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/current/dom0/rpm/
 
-update-repo-testing:
+update-repo-current-testing:
 	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/r1/current-testing/dom0/rpm/
 	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/r1/current-testing/dom0/rpm/
 	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/r1/current-testing/dom0/rpm/

@@ -14,6 +14,7 @@ RPMDIR ?= $(WORKDIR)/../rpm
 SOURCEDIR := $(WORKDIR)
 VERSION := $(shell cat ../version)
 REL := $(shell cat ../rel)
+EPOCH := $(shell cat ../epoch)
 
 RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
 		--define "_specdir $(SPECDIR)" \
@@ -22,6 +23,7 @@ RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
 		--define "_rpmdir $(RPMDIR)" \
 		--define "version $(VERSION)" \
 		--define "rel $(REL)" \
+		--define "epoch $(EPOCH)" \
 		--define "_default_patch_fuzz 3"
 
 VER_REL := $(shell rpm $(RPM_DEFINES) -q --qf "%{VERSION} %{RELEASE}\n" --specfile $(SPECFILE)| head -1)

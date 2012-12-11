@@ -6,8 +6,8 @@
 
 Summary:        KDE Graphics Applications
 Version: 	%{version}
-Release: 	%{rel}.qbs1
-Epoch:   	1000
+Release: 	%{rel}%{dist}
+Epoch:   	%{epoch}
 
 Name:           kdegraphics
 #Obsoletes:     kdegraphics4 < %{version}-%{release}

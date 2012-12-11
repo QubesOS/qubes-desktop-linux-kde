@@ -5,8 +5,8 @@
 Summary: KDE Workspace for Qubes Dom0
 Name:    kdebase-workspace
 Version: %{version}
-Release: %{rel}.qbs1
-Epoch:   1000
+Release: %{rel}%{dist}
+Epoch:   %{epoch}
 
 License: GPLv2
 Group:   User Interface/Desktops

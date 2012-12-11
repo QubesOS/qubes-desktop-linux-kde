@@ -20,8 +20,8 @@
 Summary: KDE filesystem layout
 Name: kde-filesystem
 Version: %{version}
-Release: %{rel}.qbs1
-Epoch:   1000
+Release: %{rel}%{dist}
+Epoch:   %{epoch}
 
 License: Public Domain
 BuildArch: noarch

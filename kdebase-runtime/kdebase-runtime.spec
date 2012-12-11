@@ -3,8 +3,8 @@
 Name:       kdebase-runtime
 Summary:    KDE Runtime
 Version:    %{version}
-Release:    %{rel}.qbs1
-Epoch:      1000
+Release:    %{rel}%{dist}
+Epoch:      %{epoch}
 
 # http://techbase.kde.org/Policies/Licensing_Policy
 License:    LGPLv2+

@@ -38,7 +38,7 @@ PlastikConfig::PlastikConfig(KConfig* config, QWidget* parent)
 {
     Q_UNUSED( config );
     // create the configuration object
-    m_config = new KConfig("kwinplastikrc");
+    m_config = new KConfig("kwinplastikqubesrc");
     KConfigGroup cg(m_config, "General");
     KGlobal::locale()->insertCatalog("kwin_clients");
 

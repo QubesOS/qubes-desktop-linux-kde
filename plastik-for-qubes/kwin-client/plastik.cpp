@@ -174,7 +174,7 @@ bool PlastikHandler::supports( Ability ability ) const
 void PlastikHandler::readConfig()
 {
     // create a config object
-    KConfig configFile("kwinplastikrc");
+    KConfig configFile("kwinplastikqubesrc");
     const KConfigGroup config( &configFile, "General");
 
     // grab settings

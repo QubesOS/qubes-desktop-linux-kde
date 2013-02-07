@@ -40,6 +40,8 @@ Requires: dejavu-sans-fonts
 # Qubes-customized menus
 Requires: qubes-menus
 
+Requires: kde-style-plastik-for-qubes
+
 Source0: kfileplaces-bookmarks.xml
 Source1: kickoffrc
 source2: kscreensaverrc

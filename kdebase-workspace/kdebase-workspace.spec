@@ -146,11 +146,6 @@ BuildArch: noarch
 
 %patch100 -p1 -b .qubes-cleanup
 
-
-rm -fr %_sourcedir/kdebase-workspace-%{version}/kwin/clients/plastik
-ln -sf %_sourcedir/../plastik-for-qubes %_sourcedir/kdebase-workspace-%{version}/kwin/clients/plastik
-
-
 %build
 
 mkdir -p %{_target_platform}

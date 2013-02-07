@@ -1,26 +1,38 @@
+project (plastik-for-qubes)
+cmake_minimum_required (VERSION 2.4)
 
-add_subdirectory( config )
+find_package (KDE4)
 
-########### next target ###############
+add_definitions (-DQT_NO_CAST_TO_ASCII -DQT_STRICT_ITERATORS -DQT_NO_DYNAMIC_CAST)
 
-set(kwin3_plastik_PART_SRCS
-   plastik.cpp
-   plastikclient.cpp
-   plastikbutton.cpp
-   qubeslabels.cpp
-   )
+#configure_file (config.h.cmake ${CMAKE_BINARY_DIR}/config.h)
 
+if (KDE4_FOUND)
+    include (KDE4Defaults)
+    include (MacroLibrary)
+    add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+    include_directories (${KDE4_INCLUDES} ${CMAKE_BINARY_DIR})
+#    find_package (KDE4Workspace QUIET)
+    set (KDE4WORKSPACE_FOUND OFF)
+    if (KDE4WORKSPACE_FOUND)
+        message (STATUS "Found KDE4Workspace")
+        include_directories (${KDE4WORKSPACE_INCLUDE_DIR})
+        set (BUILD_KWIN_CLIENT ON)
+    else (KDE4WORKSPACE_FOUND)
+        message (STATUS "Looking for kwinglobals.h")
+        find_file (KWINGLOBALS_H kwinglobals.h ${KDE4_INCLUDES})
+        if (KWINGLOBALS_H)
+            message (STATUS "Looking for kwinglobals.h - found")
+            set (BUILD_KWIN_CLIENT ON)
+        else (KWINGLOBALS_H)
+	    message (FATAL_ERROR "Looking for kwinglobals.h - not found.")
+        endif (KWINGLOBALS_H)
+    endif (KDE4WORKSPACE_FOUND)
+else (KDE4_FOUND)
+    message (FATAL_ERROR "*** KDE4 not found ***")
+endif (KDE4_FOUND)
 
-kde4_add_plugin(kwin3_plastik ${kwin3_plastik_PART_SRCS})
-
-
-
-target_link_libraries(kwin3_plastik kdecorations ${X11_LIBRARIES})
-
-install(TARGETS kwin3_plastik  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
-install( FILES plastik.desktop  DESTINATION  ${DATA_INSTALL_DIR}/kwin/ )
+#    macro_optional_add_subdirectory (color-schemes)
+#    macro_optional_add_subdirectory (desktoptheme)
+add_subdirectory (kwin-client)
 

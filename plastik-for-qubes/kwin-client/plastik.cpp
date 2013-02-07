@@ -550,11 +550,16 @@ PlastikHandler* Handler()
 // Plugin Stuff                                                             //
 //////////////////////////////////////////////////////////////////////////////
 
+
+// KWIN_DECORATION(KWinPlastik::PlastikHandler)
 extern "C"
 {
     KDE_EXPORT KDecorationFactory *create_factory()
     {
         KWinPlastik::handler = new KWinPlastik::PlastikHandler();
         return KWinPlastik::handler;
+    }
+    KWIN_EXPORT int decoration_version() {
+        return KWIN_DECORATION_API_VERSION;
     }
 }

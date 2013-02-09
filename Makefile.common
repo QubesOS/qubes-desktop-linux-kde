@@ -40,15 +40,12 @@ endif
 
 all: help
 
-SRC_BASEURL := ftp://ftp.kde.org/pub/kde/Attic/${VERSION}/src/
-
+URL := $(shell spectool $(RPM_DEFINES) --list-files --source 0 $(SPECFILE) | cut -d ' ' -f 2- )
 ifndef SRC_FILE
-	SRC_FILE := $(NAME)-$(VERSION).tar.bz2
-else ifneq ($(SRC_FILE), None)
-	SRC_FILE := $(SRC_FILE)-$(VERSION).tar.bz2
+ifdef URL
+	SRC_FILE := $(notdir $(URL))
 endif
-
-URL := $(SRC_BASEURL)/$(SRC_FILE)
+endif
 
 get-sources: $(SRC_FILE)
 

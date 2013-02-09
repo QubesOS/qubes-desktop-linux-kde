@@ -1,0 +1,10 @@
+diff -ru kde-settings-4.9-19.orig/usr/share/kde-settings/kde-profile/default/share/config/kwinrc kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/config/kwinrc
+--- kde-settings-4.9-19.orig/usr/share/kde-settings/kde-profile/default/share/config/kwinrc	2012-01-16 21:38:21.000000000 +0100
++++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/config/kwinrc	2013-02-09 11:28:30.796301105 +0100
+@@ -1,5 +1,5 @@
+ [Style]
+-PluginLib=kwin3_oxygen
++PluginLib=kwin3_plastik_for_qubes
+ ShowToolTips=true
+ 
+ [Windows]

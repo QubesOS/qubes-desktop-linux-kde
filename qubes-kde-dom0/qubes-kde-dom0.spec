@@ -25,7 +25,6 @@ Requires: kdm >= %{version}
 Requires: ksysguardd
 Requires: oxygen-cursor-themes
 Requires: oxygen-icon-theme
-Requires: kdemultimedia
 
 # other 3rd party packages that are useful in Dom0...
 

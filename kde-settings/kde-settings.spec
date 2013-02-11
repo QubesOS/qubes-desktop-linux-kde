@@ -6,7 +6,7 @@
 Summary: Config files for kde
 Name:    kde-settings
 Epoch:   %{epoch}
-Version: %{version}
+Version: 4.9
 Release: %{rel}%{?dist}
 
 License: MIT
@@ -132,19 +132,8 @@ ln -sf ../../../etc/kde/kdm %{buildroot}%{_datadir}/config/kdm
 mkdir -p %{buildroot}%{_localstatedir}/lib/kdm
 mkdir -p %{buildroot}%{_localstatedir}/run/{kdm,xdmctl}
 
-# rhel stuff
-%if 0%{?rhel}
-rm -rf %{buildroot}%{_sysconfdir}/kde/env/fedora-bookmarks.sh \
-       %{buildroot}%{_prefix}/lib/rpm \
-       %{buildroot}%{_datadir}/polkit-1/
-echo "[Theme]" > %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
-echo "name=RHEL7" >> %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
-echo "[KSplash]" > %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
-echo "Theme=RHEL7" >> %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
-perl -pi -e "s,^Theme=.*,Theme=/usr/share/kde4/apps/kdm/themes/RHEL7," %{buildroot}%{_sysconfdir}/kde/kdm/kdmrc
-perl -pi -e "s,^HomeURL=.*,HomeURL=file:///usr/share/doc/HTML/index.html," %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/konquerorrc
-perl -pi -e "s,^View0_URL=.*,View0_URL=file:///usr/share/doc/HTML/index.html," %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/konqueror/profiles/webbrowsing
-%endif
+# Remove Fedora branding
+rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/updates/00-start-here-kde-fedora-2.js
 
 
 %files 
@@ -169,9 +158,6 @@ perl -pi -e "s,^View0_URL=.*,View0_URL=file:///usr/share/doc/HTML/index.html," %
 %dir %{_datadir}/kde-settings/
 %dir %{_datadir}/kde-settings/kde-profile/
 %{_datadir}/kde-settings/kde-profile/default/
-%if 0%{?rhel}
-%exclude %{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/init/00-defaultLayout.js
-%endif
 
 %files minimal
 %{_datadir}/kde-settings/kde-profile/minimal/

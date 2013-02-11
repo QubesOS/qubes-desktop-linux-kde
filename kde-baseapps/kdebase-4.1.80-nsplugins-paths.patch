@@ -1,0 +1,24 @@
+diff -Naur kdebase-4.1.80/apps/konqueror/settings/konqhtml/pluginopts.cpp kdebase-4.1.80.nsplugins-path/apps/konqueror/settings/konqhtml/pluginopts.cpp
+--- kdebase-4.1.80/apps/konqueror/settings/konqhtml/pluginopts.cpp	2008-10-19 18:53:24.000000000 +0200
++++ kdebase-4.1.80.nsplugins-path/apps/konqueror/settings/konqhtml/pluginopts.cpp	2008-11-23 22:43:09.000000000 +0100
+@@ -430,6 +430,8 @@
+         paths.append("/usr/lib/mozilla/plugins");
+ 	paths.append("/usr/lib64/netscape/plugins");
+ 	paths.append("/usr/lib64/mozilla/plugins");
++	paths.append("/usr/lib64/mozilla/plugins-wrapped");
++	paths.append("/usr/lib/mozilla/plugins-wrapped");
+         paths.append("$MOZILLA_HOME/plugins");
+     }
+
+diff -Naur kdebase-4.1.80/apps/nsplugins/plugin_paths.cpp kdebase-4.1.80.nsplugins-path/apps/nsplugins/plugin_paths.cpp
+--- kdebase-4.1.80/apps/nsplugins/plugin_paths.cpp	2008-11-11 22:58:32.000000000 +0100
++++ kdebase-4.1.80.nsplugins-path/apps/nsplugins/plugin_paths.cpp	2008-11-23 22:43:09.000000000 +0100
+@@ -54,6 +54,8 @@
+         paths.append("/usr/lib/mozilla/plugins");
+ 	paths.append("/usr/lib64/netscape/plugins");
+ 	paths.append("/usr/lib64/mozilla/plugins");
++	paths.append("/usr/lib64/mozilla/plugins-wrapped");
++	paths.append("/usr/lib/mozilla/plugins-wrapped");
+         paths.append("$MOZILLA_HOME/plugins");
+         config.writeEntry( "scanPaths", paths );
+     }

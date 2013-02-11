@@ -1,0 +1,16 @@
+diff -up kdebase-4.2.1/apps/konqueror/Home.desktop.home-icon kdebase-4.2.1/apps/konqueror/Home.desktop
+--- kdebase-4.2.1/apps/konqueror/Home.desktop.home-icon	2009-02-26 15:16:30.000000000 +0100
++++ kdebase-4.2.1/apps/konqueror/Home.desktop	2009-03-01 18:43:05.000000000 +0100
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+ Type=Application
+-Exec=kfmclient openProfile filemanagement
++Exec=dolphin
+ Icon=user-home
+ Terminal=false
+ 
+@@ -170,4 +170,3 @@ GenericName[zh_CN]=个人文件
+ GenericName[zh_TW]=個人檔案
+ Categories=Qt;KDE;Core;
+ OnlyShowIn=KDE;
+-NoDisplay=true

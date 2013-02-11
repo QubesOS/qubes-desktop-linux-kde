@@ -10,17 +10,17 @@ URL: http://qubes-os.org
 
 BuildArch: noarch
 
-Requires: kde-filesystem >= %{version}
-Requires: kde-settings >= %{version}
-Requires: kde-settings-kdm >= %{version}
+Requires: kde-filesystem
+Requires: kde-settings
+Requires: kde-settings-kdm
 Requires: kdelibs >= %{version}
-Requires: kdebase-workspace >= %{version}
-Requires: kdebase-workspace-libs >= %{version}
-#Requires: kdebase-workspace-wallpapers
-Requires: kdebase-runtime >= %{version}
-Requires: kdebase-runtime-libs >= %{version}
-Requires: kdebase-runtime-flags >= %{version}
-Requires: kdebase >= %{version}
+Requires: kde-workspace >= %{version}
+Requires: kde-workspace-libs >= %{version}
+#Requires: kde-workspace-wallpapers
+Requires: kde-runtime >= %{version}
+Requires: kde-runtime-libs >= %{version}
+Requires: kde-runtime-flags >= %{version}
+Requires: kde-baseapps >= %{version}
 Requires: kdm >= %{version}
 Requires: ksysguardd
 Requires: oxygen-cursor-themes

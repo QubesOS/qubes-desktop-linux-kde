@@ -33,6 +33,7 @@ Requires(post): coreutils sed
 ###############################################################
 # Qubes Patches:
 Patch100: kde-settings-4.9-plastik-for-qubes.patch
+Patch101: qubes-menus-prefix.patch
 ###############################################################
 
 %description
@@ -113,6 +114,7 @@ Requires: pciutils
 %setup -q -n %{name}-%{version}-%{rel}
 
 %patch100 -p1
+%patch101 -p1
 
 
 %build

@@ -1,8 +1,5 @@
 default: help
 
-VERSION := $(shell cat version)
-REL := $(shell cat rel)
-
 SUBDIRS_STAGE1 := kde-baseapps kde-settings plastik-for-qubes qubes-kde-dom0 qubes-menus
 SUBDIRS_STAGE2 :=
 SUBDIRS_STAGE3 :=
@@ -39,7 +36,6 @@ rpms_stage_completed%:
 	@touch $@
 
 rpms: get-sources verify-sources rpms_stage_completed1 rpms_stage_completed2 rpms_stage_completed3 rpms_stage_completed4
-	rpm --addsign rpm/*/*$(VERSION)-$(REL)*.rpm
 
 srpms: get-sources
 	@for dir in $(SUBDIRS); do \
@@ -58,25 +54,10 @@ mrproper: clean
 	done
 	-rm -fr rpm/* srpm/*
 
-update-repo-current:
-	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/current-release/current/dom0/rpm/
-	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/current-release/current/dom0/rpm/
-	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/current-release/current/dom0/rpm/
-
-update-repo-current-testing:
-	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/current-release/current-testing/dom0/rpm/
-	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/current-release/current-testing/dom0/rpm/
-	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/current-release/current-testing/dom0/rpm/
-
-update-repo-unstable:
-	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../yum/current-release/unstable/dom0/rpm/
-	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm ../yum/current-release/unstable/dom0/rpm/
-	ln -f rpm/noarch/qubes-menus-*.rpm ../yum/current-release/unstable/dom0/rpm/
-
-update-repo-installer:
-	ln -f rpm/x86_64/*$(VERSION)-$(REL)*.rpm ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/*$(VERSION)-$(REL)*.rpm   ../installer/yum/qubes-dom0/rpm/
-	ln -f rpm/noarch/qubes-menus-*.rpm   ../installer/yum/qubes-dom0/rpm/
+update-repo-%:
+	@for dir in $(SUBDIRS); do \
+	    $(MAKE) -s -C $$dir $@ || exit 1;\
+	done
 
 help:
 	@echo "Usage: make <target>"

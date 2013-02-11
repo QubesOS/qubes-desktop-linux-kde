@@ -13,7 +13,6 @@ BUILDDIR ?= $(WORKDIR)
 RPMDIR ?= $(WORKDIR)/../rpm
 SOURCEDIR := $(WORKDIR)
 VERSION := $(shell cat ../version)
-REL := $(shell cat ../rel)
 EPOCH := $(shell cat ../epoch)
 
 RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
@@ -22,21 +21,16 @@ RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
 		--define "_srcrpmdir $(SRCRPMDIR)" \
 		--define "_rpmdir $(RPMDIR)" \
 		--define "version $(VERSION)" \
-		--define "rel $(REL)" \
 		--define "epoch $(EPOCH)" \
 		--define "_default_patch_fuzz 3"
 
-VER_REL := $(shell rpm $(RPM_DEFINES) -q --qf "%{VERSION} %{RELEASE}\n" --specfile $(SPECFILE)| head -1)
+VER_REL := $(shell rpm $(RPM_DEFINES) --define "dist .$(DIST_DOM0)" -q --qf "%{VERSION} %{RELEASE}\n" --specfile $(SPECFILE)| head -1)
 
 ifndef NAME
 $(error "You can not run this Makefile without having NAME defined")
 endif
-ifndef VERSION
-$(error "You can not run this Makefile without having VERSION defined")
-endif
-ifndef RELEASE
-RELEASE := $(word 2, $(VER_REL))
-endif
+VERSION := $(word 1, $(VER_REL))
+REL := $(word 2, $(VER_REL))
 
 all: help
 
@@ -91,6 +85,18 @@ srpm: get-sources $(SPECFILE)
 
 verrel:
 	@echo $(NAME)-$(VERSION)-$(RELEASE)
+
+update-repo-current:
+	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../yum/current-release/current/dom0/rpm/
+
+update-repo-current-testing:
+	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../yum/current-release/current-testing/dom0/rpm/
+
+update-repo-unstable:
+	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../yum/current-release/unstable/dom0/rpm/
+
+update-repo-installer:
+	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../installer/yum/qubes-dom0/rpm/
 
 # mop up, printing out exactly what was mopped.
 

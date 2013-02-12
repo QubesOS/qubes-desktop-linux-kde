@@ -34,6 +34,7 @@ Requires(post): coreutils sed
 # Qubes Patches:
 Patch100: kde-settings-4.9-plastik-for-qubes.patch
 Patch101: qubes-menus-prefix.patch
+Patch102: kdm-settings.patch
 ###############################################################
 
 %description
@@ -51,11 +52,7 @@ Requires: xorg-x11-xinit
 Summary: Configuration files for kdm
 # MinShowUID=-1 is only supported from 4.7.1-2 on
 Requires: kdm >= 4.7.1-2
-%if 0%{?fedora}
-Requires: system-kdm-theme >= %{system_kde_theme_ver}
-%else
-Requires: redhat-logos >= 69.0.0
-%endif
+Requires: kdm-themes
 
 Requires: xorg-x11-xinit
 Requires(pre): coreutils
@@ -70,22 +67,12 @@ Requires(postun): systemd
 %package ksplash
 Summary: Configuration files for ksplash
 Requires: %{name} = %{version}-%{release}
-%if 0%{?fedora}
-Requires: system-ksplash-theme >= %{system_kde_theme_ver}
-%else
-Requires: redhat-logos >= 69.0.0
-%endif
 %description ksplash 
 %{summary}.
 
 %package plasma
 Summary: Configuration files for plasma 
 Requires: %{name} = %{version}-%{release}
-%if 0%{?fedora}
-Requires: system-plasma-desktoptheme >= %{system_kde_theme_ver}
-%else
-Requires: redhat-logos >= 69.0.0
-%endif
 %description plasma 
 %{summary}.
 
@@ -115,7 +102,7 @@ Requires: pciutils
 
 %patch100 -p1
 %patch101 -p1
-
+%patch102 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.
@@ -138,6 +125,8 @@ mkdir -p %{buildroot}%{_localstatedir}/run/{kdm,xdmctl}
 
 # Remove Fedora branding
 rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/updates/00-start-here-kde-fedora-2.js
+rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
+rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
 
 # Qubes defaults
 install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/init/
@@ -208,10 +197,8 @@ install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/kde-settings/kde-profile/def
 %{_unitdir}-preset/81-fedora-kdm.preset
 
 %files ksplash
-%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
 
 %files plasma
-%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
 
 %files pulseaudio
 # nothing, this is a metapackage

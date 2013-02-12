@@ -67,6 +67,9 @@ rm -f %{_datadir}/applications/system-config-users.desktop
 %triggerin -- system-config-keyboard
 rm -f %{_datadir}/applications/system-config-keyboard.desktop
 
+%triggerin -- nepomuk-core
+rm -f %{_datadir}/applications/kde4/nepomukbackup.desktop
+
 %posttrans
 update-desktop-database %{_datadir}/applications
 

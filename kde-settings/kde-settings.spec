@@ -42,7 +42,7 @@ Patch102: kdm-settings.patch
 
 %package minimal
 Summary: Minimal configuration files for KDE
-Requires: %{name} = %{version}-%{release}
+Requires: %{name} = %{epoch}:%{version}-%{release}
 Requires: kde-workspace-ksplash-themes
 Requires: xorg-x11-xinit
 %description minimal
@@ -66,13 +66,13 @@ Requires(postun): systemd
 
 %package ksplash
 Summary: Configuration files for ksplash
-Requires: %{name} = %{version}-%{release}
+Requires: %{name} = %{epoch}:%{version}-%{release}
 %description ksplash 
 %{summary}.
 
 %package plasma
 Summary: Configuration files for plasma 
-Requires: %{name} = %{version}-%{release}
+Requires: %{name} = %{epoch}:%{version}-%{release}
 %description plasma 
 %{summary}.
 
@@ -80,7 +80,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Enable pulseaudio support in KDE
 # nothing here to license
 License: Public Domain
-Requires: %{name} = %{version}-%{release}
+Requires: %{name} = %{epoch}:%{version}-%{release}
 Requires: pulseaudio
 Requires: pulseaudio-module-x11
 ## kde3

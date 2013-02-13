@@ -36,6 +36,7 @@ Patch100: kde-settings-4.9-plastik-for-qubes.patch
 Patch101: qubes-menus-prefix.patch
 Patch102: kdm-settings.patch
 Patch103: disable-nepomuk.patch
+Patch104: hide-knetattach.patch
 ###############################################################
 
 %description
@@ -105,6 +106,7 @@ Requires: pciutils
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
+%patch104 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

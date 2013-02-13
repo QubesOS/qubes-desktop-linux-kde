@@ -1,0 +1,7 @@
+Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/knetattach.desktop
+===================================================================
+--- /dev/null
++++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/knetattach.desktop
+@@ -0,0 +1,2 @@
++[Desktop Entry]
++Hidden=true

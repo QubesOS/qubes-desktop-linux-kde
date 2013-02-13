@@ -17,7 +17,7 @@
 
   <Menu>
     <Name>System Tools</Name>
-    <Directory>System-Tools.directory</Directory>
+    <Directory>qubes-System-Tools.directory</Directory>
     <OnlyUnallocated/>
     <Include>
       <All/>

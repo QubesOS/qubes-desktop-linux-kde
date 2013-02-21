@@ -1,0 +1,7 @@
+Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/config/klipperrc
+===================================================================
+--- /dev/null
++++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/config/klipperrc
+@@ -0,0 +1,2 @@
++[General]
++AutoStart=false

@@ -37,6 +37,7 @@ Patch101: qubes-menus-prefix.patch
 Patch102: kdm-settings.patch
 Patch103: disable-nepomuk.patch
 Patch104: hide-knetattach.patch
+Patch105: disable-klipper.patch
 ###############################################################
 
 %description
@@ -107,6 +108,7 @@ Requires: pciutils
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
+%patch105 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

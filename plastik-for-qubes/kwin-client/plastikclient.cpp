@@ -71,7 +71,7 @@ PlastikClient::~PlastikClient()
 
 QString PlastikClient::visibleName() const
 {
-    return i18n("Plastik");
+    return i18n("Plastik for Qubes");
 }
 
 bool PlastikClient::decorationBehaviour(DecorationBehaviour behaviour) const

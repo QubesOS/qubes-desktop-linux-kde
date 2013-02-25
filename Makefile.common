@@ -34,7 +34,7 @@ REL := $(word 2, $(VER_REL))
 
 all: help
 
-URL := $(shell spectool $(RPM_DEFINES) --list-files --source 0 $(SPECFILE) | cut -d ' ' -f 2- )
+URL := $(shell spectool $(RPM_DEFINES) --list-files --source 0 $(SPECFILE) 2> /dev/null| cut -d ' ' -f 2- )
 ifndef SRC_FILE
 ifdef URL
 	SRC_FILE := $(notdir $(URL))

@@ -2,16 +2,20 @@ Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/appl
 ===================================================================
 --- /dev/null
 +++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/nepomukbackup.desktop
-@@ -0,0 +1,2 @@
+@@ -0,0 +1,4 @@
 +[Desktop Entry]
-+Hidden=true
++NoDisplay=true
++Name=Removed entry
++Exec=/bin/true
 Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/nepomukcontroller.desktop
 ===================================================================
 --- /dev/null
 +++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/nepomukcontroller.desktop
-@@ -0,0 +1,2 @@
+@@ -0,0 +1,4 @@
 +[Desktop Entry]
-+Hidden=true
++NoDisplay=true
++Name=Removed entry
++Exec=/bin/true
 Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/autostart/nepomukcontroller.desktop
 ===================================================================
 --- /dev/null

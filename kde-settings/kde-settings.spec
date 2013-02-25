@@ -38,6 +38,7 @@ Patch102: kdm-settings.patch
 Patch103: disable-nepomuk.patch
 Patch104: hide-knetattach.patch
 Patch105: disable-klipper.patch
+Patch106: hide-kde-help.patch
 ###############################################################
 
 %description
@@ -109,6 +110,7 @@ Requires: pciutils
 %patch103 -p1
 %patch104 -p1
 %patch105 -p1
+%patch106 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

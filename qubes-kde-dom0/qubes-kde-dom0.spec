@@ -1,5 +1,10 @@
 # This is a meta package that makes installing all KDE components easy
 
+%if 0%{?qubes_builder}
+%define _sourcedir %(pwd)/qubes-kde-dom0
+%define version %(cat version)
+%endif
+
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
 Version: %{version}

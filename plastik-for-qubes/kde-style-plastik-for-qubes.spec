@@ -1,3 +1,8 @@
+%if 0%{?qubes_builder}
+%define _sourcedir %(pwd)/plastik-for-qubes
+%define _builddir %(pwd)/plastik-for-qubes
+%endif
+
 Name: kde-style-plastik-for-qubes
 Version: 1.0
 Release: 1%{?dist}

@@ -86,18 +86,6 @@ srpm: get-sources $(SPECFILE)
 verrel:
 	@echo $(NAME)-$(VERSION)-$(RELEASE)
 
-update-repo-current:
-	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../yum/current-release/current/dom0/rpm/
-
-update-repo-current-testing:
-	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../yum/current-release/current-testing/dom0/rpm/
-
-update-repo-unstable:
-	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../yum/current-release/unstable/dom0/rpm/
-
-update-repo-installer:
-	ln -f ../rpm/*/$(NAME)-*$(VERSION)-$(REL)*.rpm ../../installer/yum/qubes-dom0/rpm/
-
 # mop up, printing out exactly what was mopped.
 
 .PHONY : clean

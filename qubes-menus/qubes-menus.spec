@@ -1,3 +1,8 @@
+%if 0%{?qubes_builder}
+%define _sourcedir %(pwd)/qubes-menus
+%define _builddir %(pwd)/qubes-menus
+%endif
+
 %define gettext_package redhat-menus
 %define desktop_file_utils_version 0.9
 

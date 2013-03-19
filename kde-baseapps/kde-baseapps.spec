@@ -1,3 +1,9 @@
+%if 0%{?qubes_builder}
+%define _sourcedir %(pwd)/kde-baseapps
+%endif
+%{!?version: %define version %(cat version)}
+%{!?epoch: %define epoch %(cat epoch)}
+
 Name:    kde-baseapps
 Summary: KDE Core Applications 
 Epoch:   %{epoch}

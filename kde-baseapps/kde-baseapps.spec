@@ -92,12 +92,6 @@ kfind : File find utility
 kfmclient : Tool for opening URLs from the command line
 konqueror : Web browser, file manager and document viewer
 
-%package -n kde-plasma-folderview
-Summary: FolderView plasma applet
-Requires: %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-%description -n kde-plasma-folderview
-%{summary}.
-
 %package libs
 Summary: Runtime libraries for %{name}
 Obsoletes: kdebase-libs < 6:4.7.97-10

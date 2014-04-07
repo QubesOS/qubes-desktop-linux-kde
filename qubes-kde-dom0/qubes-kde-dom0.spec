@@ -19,14 +19,14 @@ Requires: kde-filesystem
 Requires: kde-settings
 Requires: kde-settings-kdm
 Requires: kdelibs >= %{version}
-Requires: kde-workspace >= %{version}
-Requires: kde-workspace-libs >= %{version}
+Requires: kde-workspace
+Requires: kde-workspace-libs
 #Requires: kde-workspace-wallpapers
 Requires: kde-runtime >= %{version}
 Requires: kde-runtime-libs >= %{version}
 Requires: kde-runtime-flags >= %{version}
 Requires: kde-baseapps >= %{version}
-Requires: kdm >= %{version}
+Requires: kdm
 Requires: ksysguardd
 Requires: oxygen-cursor-themes
 Requires: oxygen-icon-theme

@@ -1,0 +1,23 @@
+--- kde-baseapps-4.12.3/CMakeLists.txt.qubes	2014-04-04 05:11:57.498741717 +0200
++++ kde-baseapps-4.12.3/CMakeLists.txt	2014-04-04 05:14:46.720787531 +0200
+@@ -43,20 +43,13 @@
+ endif ( KActivities_FOUND )
+ 
+ add_subdirectory( lib )
+-add_subdirectory( dolphin )
+ add_subdirectory( kdialog )
+-add_subdirectory( keditbookmarks )
+-add_subdirectory( konqueror )
+-add_subdirectory( kfind )
+-add_subdirectory( plasma )
+-add_subdirectory( konq-plugins )
+ 
+ if ( Q_WS_MAC )
+   add_subdirectory( kdepasswd )
+ endif ( Q_WS_MAC )
+ 
+ if ( Q_WS_X11 )
+-  add_subdirectory( nsplugins )
+   add_subdirectory( kdepasswd )
+ endif ( Q_WS_X11 )
+ macro_optional_add_subdirectory( doc )

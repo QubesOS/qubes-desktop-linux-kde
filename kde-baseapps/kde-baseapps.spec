@@ -32,7 +32,7 @@ Patch2: kdebase-4.2.1-home-icon.patch
 Patch3: kdebase-4.4.0-konqueror-kde#228593.patch
 
 # Password & User account becomes non responding
-Patch4: kdebase-4.3.4-bz#609039-chfn-parse.patch
+Patch4: kde-baseapps-4.12.2-bz#609039.patch
 
 # add x-scheme-handler/http for konqueror so it can be set
 # as default browser in GNOME
@@ -41,31 +41,20 @@ Patch5: kde-baseapps-4.9.2-konqueror-mimetyp.patch
 ## upstream patches
 
 ## Qubes patches
-Patch100: kde-baseapps-4.9-qubes.patch
+Patch100: kde-baseapps-4.12-qubes.patch
 
 %ifnarch s390 s390x
 Requires: eject
 %endif
 
 Requires: %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires: util-linux
 
 Obsoletes: kdebase < 6:4.7.97-10
 Provides:  kdebase = 6:%{version}-%{release}
 
 Obsoletes: kdebase4 < %{version}-%{release}
 Provides:  kdebase4 = %{version}-%{release}
-
-Obsoletes: d3lphin
-Obsoletes: dolphin < 1.0.2-1
-Provides:  dolphin = %{version}-%{release} 
-
-Obsoletes: kde-plasma-folderview < 6:4.3.1-1
-Provides:  kde-plasma-folderview = %{?epoch:%{epoch}:}%{version}-%{release} 
-
-Obsoletes: konq-plugins < 4.6.80-1
-Provides:  konq-plugins = %{version}-%{release}
-
-Provides: konqueror = %{version}-%{release}
 
 BuildRequires: gcc-c++
 BuildRequires: desktop-file-utils
@@ -77,21 +66,28 @@ BuildRequires: pkgconfig
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(libstreams)
 
-Requires: kde-runtime%{?_kde4_version: >= %{_kde4_version}}
 # for upgrade path, when konsole, kwrite were split out since 4.7.90
-# remove unconditional or f18+ only? (bug #834137)  -- rex
-#Requires: konsole
-#Requires: kwrite
+%if 0%{?fedora} < 17 && 0%{?rhel} < 7
+Requires: konsole
+Requires: kwrite
+%endif
 
 %description
-Core applications for KDE 4, including:
+Metapackage for Core applications of KDE 4, including:
 dolphin : File manager
-kdepasswd : Changes a UNIX password.
+kdepasswd : Changes a UNIX password
 kdialog : Nice dialog boxes from shell scripts
-keditbookmarks : Bookmark oranizer and editor
+keditbookmarks : Bookmark organizer and editor
 kfind : File find utility
-kfmclient : Tool for opening URLs from the command line
 konqueror : Web browser, file manager and document viewer
+plasma_applet_folderview : folderview plasma applet
+
+%package common
+Summary: Common files for %{name}
+Conflicts: kde-baseapps < 4.12.0-2
+BuildArch: noarch
+%description common
+%{summary}
 
 %package libs
 Summary: Runtime libraries for %{name}
@@ -110,11 +106,33 @@ Obsoletes: kdebase-devel < 6:4.7.97-10
 Provides:  kdebase-devel = 6:%{version}-%{release}
 Obsoletes: kdebase4-devel < %{version}-%{release}
 Provides:  kdebase4-devel = %{version}-%{release}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: libkonq%{?_isa} = %{epoch}:%{version}-%{release}
 Requires: %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires: kdelibs4-devel
 %description devel
 %{summary}.
 
+%package -n kdepasswd
+Summary: Changes your UNIX password
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: kde-runtime%{?_kde4_version: >= %{_kde4_version}}
+%description -n kdepasswd
+This application allows you to change your UNIX password.
+
+%package -n kdialog
+Summary:  Nice dialog boxes from shell scripts
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: kde-runtime%{?_kde4_version: >= %{_kde4_version}}
+%description -n kdialog
+KDialog can be used to show nice dialog boxes from shell scripts.
+
+%package -n libkonq
+Summary: Libkonq shared resources
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: kdelibs4%{?_isa}%{?_kde4_version: >= %{_kde4_version}}
+%description -n libkonq
+%{summary}.
 
 %prep
 %setup -q -n kde-baseapps-%{version}
@@ -122,7 +140,7 @@ Requires: kdelibs4-devel
 %patch0 -p2 -b .nsplugins-paths
 %patch2 -p2 -b .home-icon
 %patch3 -p2 -b .kde#228593
-%patch4 -p2 -b .bz#631481
+%patch4 -p1 -b .bz#609039
 %patch5 -p1 -b .mimetyp.patch
 
 %patch100 -p1 -b .qubes
@@ -145,7 +163,10 @@ mkdir -p %{buildroot}%{_kde4_appsdir}/konqueror/{kpartplugins,icons,opensearch}
 
 ## unpackaged files
 # libs for which there is no (public) api
-rm -f %{buildroot}%{_libdir}/lib{dolphin,kbookmarkmodel_,konqueror}private.so
+rm -fv %{buildroot}%{_kde4_libdir}/lib{dolphin,kbookmarkmodel_,konqueror}private.so
+# omit konqsidebarplugin api bits (for now), nothing uses it afaict -- rex
+rm -fv %{buildroot}%{_kde4_libdir}/libkonqsidebarplugin.so
+rm -fv %{buildroot}%{_kde4_includedir}/konqsidebarplugin.h
 
 # move devel symlinks
 mkdir -p %{buildroot}%{_kde4_libdir}/kde4/devel
@@ -153,9 +174,9 @@ pushd %{buildroot}%{_kde4_libdir}
 for i in lib*.so
 do
   case "$i" in
-    libkonq.so|libkonqsidebarplugin.so)
+    libkonq.so)
       linktarget=`readlink "$i"`
-      rm -f "$i"
+      rm -fv "$i"
       ln -sf "../../$linktarget" "kde4/devel/$i"
       ;;
     *)
@@ -166,8 +187,11 @@ popd
 
 # Qubes cleanup
 rm -f %{buildroot}%{_kde4_appsdir}/kbookmark/directory_bookmarkbar.desktop
+rm -f %{buildroot}/usr/share/man/man1/kbookmarkmerger.1
+rm -f %{buildroot}/usr/share/man/man1/kfind.1
 
 %find_lang %{name} --all-name --with-kde --without-mo
+%find_lang kdepasswd --with-kde --without-mo
 
 
 %check
@@ -204,7 +228,6 @@ fi
 %{_kde4_bindir}/kdialog
 %{_kde4_datadir}/applications/kde4/kdepasswd.desktop
 %{_kde4_appsdir}/konqueror/pics/*
-%{_kde4_appsdir}/kconf_update/*
 %{_kde4_appsdir}/kdm/
 %{_kde4_datadir}/config.kcfg/*
 %{_datadir}/dbus-1/interfaces/*
@@ -221,9 +244,52 @@ fi
 %files libs
 %{_kde4_libdir}/libkonq.so*
 
+%files common
+%doc COPYING COPYING.DOC COPYING.LIB
+
+
+
+%post -n libkonq -p /sbin/ldconfig
+%postun -n libkonq -p /sbin/ldconfig
+
+%files -n libkonq
+%{_kde4_libdir}/libkonq.so.5*
+%{_kde4_libdir}/kde4/kded_favicons.so
+%{_kde4_libdir}/kde4/konq_sound.so
+%{_kde4_appsdir}/kbookmark/
+%dir %{_kde4_appsdir}/konqueror/
+%dir %{_kde4_appsdir}/konqueror/pics/
+%{_kde4_appsdir}/konqueror/pics/arrow_*.png
+%{_kde4_datadir}/kde4/services/kded/favicons.desktop
+%{_kde4_datadir}/kde4/servicetypes/konqdndpopupmenuplugin.desktop
+%{_kde4_datadir}/kde4/servicetypes/konqpopupmenuplugin.desktop
+%{_kde4_datadir}/templates/.source/*
+%{_kde4_datadir}/templates/*.desktop
+
+#files -n libkonq-devel
 %files devel
-%{_kde4_includedir}/*.h
 %{_kde4_libdir}/kde4/devel/libkonq.so
+%{_kde4_includedir}/knewmenu.h
+%{_kde4_includedir}/konq_*.h
+%{_kde4_includedir}/konqmimedata.h
+%{_kde4_includedir}/kversioncontrolplugin*.h
+%{_kde4_includedir}/libkonq_export.h
+
+%files -n kdepasswd -f kdepasswd.lang
+%{_kde4_bindir}/kdepasswd
+%{_kde4_datadir}/applications/kde4/kdepasswd.desktop
+%{_kde4_libdir}/kde4/kcm_useraccount.so
+%{_kde4_datadir}/config.kcfg/kcm_useraccount.kcfg
+%{_kde4_datadir}/config.kcfg/kcm_useraccount_pass.kcfg
+%{_kde4_datadir}//kde4/services/kcm_useraccount.desktop
+%dir %{_kde4_appsdir}/kdm
+%dir %{_kde4_appsdir}/kdm/pics
+%dir %{_kde4_appsdir}/kdm/pics/users/
+%{_kde4_appsdir}/kdm/pics/users/*
+
+%files -n kdialog
+%{_kde4_bindir}/kdialog
+%{_datadir}/dbus-1/interfaces/org.kde.kdialog.ProgressDialog.xml
 
 
 %changelog

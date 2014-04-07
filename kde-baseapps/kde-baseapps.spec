@@ -67,6 +67,7 @@ Provides:  konq-plugins = %{version}-%{release}
 
 Provides: konqueror = %{version}-%{release}
 
+BuildRequires: gcc-c++
 BuildRequires: desktop-file-utils
 BuildRequires: kdelibs4-devel >= %{version}
 %if 0%{?fedora}

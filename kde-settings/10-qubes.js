@@ -7,6 +7,7 @@ for (var i in panelIds) {
 		if (widget.type == 'launcher') {
 			var simpleMenu = panel.addWidget('simplelauncher')
 			simpleMenu.index = widget.index + 1
+			simpleMenu.writeConfig('icon', 'start-here-qubes')
 			widget.remove()
 		}
 	}

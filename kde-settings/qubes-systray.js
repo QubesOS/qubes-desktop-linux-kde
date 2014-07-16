@@ -26,9 +26,9 @@ for (var i in panelIds) {
     for (var j in panel.widgetIds) {
         var widget = panel.widgetById(panel.widgetIds[j]);
         if (widget.type == "systemtray") {
-	    widget.writeConfig('DefaultAppletsAdded', 'true')
+            widget.writeConfig('DefaultAppletsAdded', 'true')
             widget.currentConfigGroup = new Array('Applets', biggestId+1);
-            widget.writeConfig('plugin', 'notifications');
+            widget.writeConfig('plugin', 'org.kde.notifications');
             widget.currentConfigGroup = new Array('Applets', biggestId+2);
             widget.writeConfig('plugin', 'battery');
             widget.reloadConfig();

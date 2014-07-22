@@ -19,7 +19,6 @@ Url:     http://fedorahosted.org/kde-settings
 Source0: https://fedorahosted.org/releases/k/d/kde-settings/%{name}-%{version}-%{rel}.tar.xz
 Source1: COPYING
 Source100: 10-qubes.js
-Source101: qubes-systray.js
 BuildArch: noarch
 
 BuildRequires: kde-filesystem
@@ -143,7 +142,6 @@ rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/kspl
 
 # Qubes defaults
 install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/init/
-install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/updates/
 
 %files 
 %doc COPYING

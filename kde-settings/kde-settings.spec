@@ -12,7 +12,7 @@ Summary: Config files for kde
 Name:    kde-settings
 Epoch:   %{epoch}
 Version: 4.9
-Release: %{rel}.3%{?dist}
+Release: %{rel}.4%{?dist}
 
 License: MIT
 Url:     http://fedorahosted.org/kde-settings

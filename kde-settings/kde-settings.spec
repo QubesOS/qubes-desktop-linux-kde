@@ -31,6 +31,7 @@ Requires: xdg-user-dirs
 Requires: adwaita-cursor-theme
 # /usr/share/polkit-1/rules.d/ ownership
 Requires: polkit >= 0.106
+Requires: qubes-artwork
 
 Requires(post): coreutils sed
 

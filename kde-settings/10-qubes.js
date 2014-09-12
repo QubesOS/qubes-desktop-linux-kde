@@ -12,3 +12,9 @@ for (var i in panelIds) {
 		}
 	}
 }
+
+/* wallpaper */
+var activity = activities()[0];
+activity.currentConfigGroup = new Array('Wallpaper', 'image');
+activity.writeConfig('wallpaper', '/usr/share/wallpapers/Qubes_Steel');
+activity.writeConfig('wallpaperposition', '2');

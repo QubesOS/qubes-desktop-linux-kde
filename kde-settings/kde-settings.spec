@@ -555,7 +555,7 @@ install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/def
 - -kdm: fix up %%post, s/oxygen-air/Constantine/
 - -kdm: Requires: system-kdm-theme
 
-* Thu Sep 08 2009 Rex Dieter <rdieter@fedoraproject.org> - 4.3-6
+* Tue Sep 08 2009 Rex Dieter <rdieter@fedoraproject.org> - 4.3-6
 - konversationrc: preconfigure #fedora #fedora-kde #kde #konversation channels
 - kdmrc: Theme=.../Constantine
 - ksplashrc: Theme=Constantine
@@ -619,7 +619,7 @@ install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/def
 - remove defaults.list, add mimeapps.list, including
   prefs to fix "mime-type/extension for .rpm is wrong" (#457783)
 
-* Mon Jan 23 2009 Rex Dieter <rdieter@fedoraproject.org> - 4.2-1
+* Fri Jan 23 2009 Rex Dieter <rdieter@fedoraproject.org> - 4.2-1
 - rev/branch 4.2 for F-11
 
 * Fri Jan 16 2009 Than Ngo <than@redhat.com> - 4.1-5
@@ -848,7 +848,7 @@ install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/def
 * Wed Jan 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.5-16
 - kcmnspluginrc: scanPaths: +/usr/lib/firefox/plugins (flash-plugin-9 compat)
 
-* Mon Jan 06 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.5-15
+* Sat Jan 06 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.5-15
 - xdg_env-hack: handle XDG_MENU_PREFIX too
 
 * Fri Jan 05 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.5-14
@@ -868,7 +868,7 @@ install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/def
 - kwinrc: PluginLib=kwin_plastik (from kwin_bluecurve)
 - xdg_config_dirs-hack: backup existing $HOME/.config/menus
 
-* Thu Oct 24 2006 Rex Dieter <rexdieter[AT]users.sf.net> 3.5-7
+* Tue Oct 24 2006 Rex Dieter <rexdieter[AT]users.sf.net> 3.5-7
 - fixup %%pre/%%post to properly handle kdmrc move
 - xdg_config_dirs-hack: don't run on *every* login
 

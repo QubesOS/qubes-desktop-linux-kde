@@ -506,7 +506,7 @@ fi
 * Tue Aug 03 2010 Than Ngo <than@redhat.com> - 6:4.5.0-1
 - 4.5.0
 
-* Sat Jul 25 2010 Rex Dieter <rdieter@fedoraproject.org> - 6:4.4.95-1
+* Sun Jul 25 2010 Rex Dieter <rdieter@fedoraproject.org> - 6:4.4.95-1
 - 4.5 RC3 (4.4.95)
 
 * Wed Jul 07 2010 Rex Dieter <rdieter@fedoraproject.org> - 6:4.4.92-1
@@ -971,7 +971,7 @@ fi
 - cleanup/fix kde4.desktop
 - kdepimlibs4->kdepimlibs
 
-* Thu Jun 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-3
+* Fri Jun 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-3
 - fix %%_sysconfdir for %%_prefix != /usr case.
 
 * Thu Jun 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-2

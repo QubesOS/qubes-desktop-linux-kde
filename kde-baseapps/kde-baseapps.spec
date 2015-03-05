@@ -18,6 +18,8 @@ URL:     https://projects.kde.org/projects/kde/kde-baseapps
 %else
 %global stable stable
 %endif
+#override
+%define stable Attic
 Source0: ftp://ftp.kde.org/pub/kde/%{stable}/%{version}/src/kde-baseapps-%{version}.tar.xz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

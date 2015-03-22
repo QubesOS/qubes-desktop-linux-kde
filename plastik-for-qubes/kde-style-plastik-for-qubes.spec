@@ -14,6 +14,7 @@ BuildRequires: qt4-devel
 BuildRequires: kde-filesystem
 BuildRequires: kdelibs4-devel
 BuildRequires: kdebase-workspace-devel
+BuildRequires: kwin-libs
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Plastik for Qubes
 

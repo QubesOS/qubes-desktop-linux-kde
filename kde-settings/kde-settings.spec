@@ -146,7 +146,7 @@ rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/kspl
 
 # Qubes defaults
 install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/init/
-install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/updates/
+install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/init/
 
 %files 
 %doc COPYING

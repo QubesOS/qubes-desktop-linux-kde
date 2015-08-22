@@ -15,7 +15,7 @@ SOURCEDIR := $(WORKDIR)
 VERSION := $(shell cat ../version)
 EPOCH := $(shell cat ../epoch)
 
-DISTFILES_MIRROR := http://sourceforge.net/projects/qubesos/files/distfiles/
+DISTFILES_MIRROR := https://ftp.qubes-os.org/distfiles/
 
 RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
 		--define "_specdir $(SPECDIR)" \

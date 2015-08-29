@@ -603,6 +603,7 @@ const QPixmap &PlastikClient::captionPixmap() const
     painter.drawTiledPixmap(captionPixmap->rect(),
                             Handler()->pixmap(qubes_label, TitleBarTile, active, isToolWindow()) );
 
+    painter.setFont(s_vmnameFont);
     QRect boundingRect1 = painter.boundingRect(captionPixmap->rect(),
                                               Qt::AlignVCenter | Qt::AlignLeft, qubes_vmname);
 

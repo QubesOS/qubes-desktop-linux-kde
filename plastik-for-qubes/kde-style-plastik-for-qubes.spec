@@ -4,7 +4,7 @@
 %endif
 
 Name: kde-style-plastik-for-qubes
-Version: 1.0
+Version: 1.1
 Release: 1%{?dist}
 URL: http://www.qubes-os.org/
 Source: .

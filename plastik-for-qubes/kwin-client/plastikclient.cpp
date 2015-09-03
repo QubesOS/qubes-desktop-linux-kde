@@ -614,7 +614,6 @@ const QPixmap &PlastikClient::captionPixmap() const
 
     painter.setPen(fontColor );
 
-    painter.setFont(s_vmnameFont);
     painter.drawText(tp1, qubes_vmname );
 
     painter.setFont(s_titleFont);

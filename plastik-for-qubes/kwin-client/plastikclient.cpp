@@ -276,6 +276,11 @@ void PlastikClient::get_qubes_label() {
     }
 
     int label = (int)*data;
+    if (label < 0 || label >= MAX_QUBES_LABELS) {
+        // Out of range.  // Make sure we don't crash, and
+        // signal something is wrong with a red label.
+        label = QUBES_LABEL_RED;
+    }
     qubes_label = QubesLabels[label];
 }
 

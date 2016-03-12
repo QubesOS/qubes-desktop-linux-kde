@@ -439,8 +439,8 @@ install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/kde-settings/kde-profile/def
 - add support for the postlogin PAM stack to kdm (#665060)
 
 * Wed Dec 08 2010 Rex Dieter <rdieter@fedoraproject.org> 4.6-2.1
-- %post kdm : sed -e 's|-nr|-background none|' kdmrc (#659684)
-- %post kdm : drop old stuff
+- %%post kdm : sed -e 's|-nr|-background none|' kdmrc (#659684)
+- %%post kdm : drop old stuff
 
 * Fri Dec 03 2010 Rex Dieter <rdieter@fedoraproject.org> - 4.6-2
 - drop old Conflicts

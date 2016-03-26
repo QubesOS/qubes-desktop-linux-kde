@@ -2,8 +2,9 @@
 
 %if 0%{?qubes_builder}
 %define _sourcedir %(pwd)/qubes-kde-dom0
-%define version %(cat version)
 %endif
+%{!?version: %define version %(cat version)}
+
 
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0

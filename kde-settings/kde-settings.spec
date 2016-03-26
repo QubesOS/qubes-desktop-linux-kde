@@ -1,9 +1,8 @@
 # THIS SPECFILE IS FOR F18 ONLY!
-
 %if 0%{?qubes_builder}
 %define _sourcedir %(pwd)/kde-settings
-%define epoch %(cat epoch)
 %endif
+%{!?epoch: %define epoch %(cat epoch)}
 
 %global rel 19
 %global system_kde_theme_ver 17.91

@@ -1,6 +1,6 @@
 default: help
 
-SUBDIRS_STAGE1 := kde-baseapps kde-settings plastik-for-qubes qubes-kde-dom0 qubes-menus
+SUBDIRS_STAGE1 := plasma-breeze-qubes kde-baseapps kde-settings qubes-kde-dom0 qubes-menus
 SUBDIRS_STAGE2 :=
 SUBDIRS_STAGE3 :=
 SUBDIRS_STAGE4 :=

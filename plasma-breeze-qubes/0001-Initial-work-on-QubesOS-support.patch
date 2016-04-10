@@ -1,0 +1,460 @@
+From 2b282312abe83b2ee3dad955d6619bed21d5698e Mon Sep 17 00:00:00 2001
+From: "M. Vefa Bicakci" <m.v.b@runbox.com>
+Date: Mon, 16 Nov 2015 02:34:34 -0500
+Subject: [PATCH] Initial work on QubesOS support
+
+This commit does not rename any files/directories/classes/etc. on
+purpose, as doing so would require a lot of maintenance in the future.
+As a result, the Breeze theme resulting from this commit cannot be
+installed in parallel with the vanilla Breeze theme.
+---
+ kdecoration/CMakeLists.txt       |   5 +-
+ kdecoration/breezedecoration.cpp |  50 +++++++++++++++--
+ kdecoration/breezedecoration.h   |  22 +++++++-
+ kdecoration/qubeslabels.cpp      |  13 +++++
+ kdecoration/qubeslabels.h        |  45 +++++++++++++++
+ kdecoration/qubesutils.cpp       | 115 +++++++++++++++++++++++++++++++++++++++
+ kdecoration/qubesutils.h         |  33 +++++++++++
+ 7 files changed, 273 insertions(+), 10 deletions(-)
+ create mode 100644 kdecoration/qubeslabels.cpp
+ create mode 100644 kdecoration/qubeslabels.h
+ create mode 100644 kdecoration/qubesutils.cpp
+ create mode 100644 kdecoration/qubesutils.h
+
+diff --git a/kdecoration/CMakeLists.txt b/kdecoration/CMakeLists.txt
+index 668371b189d3..7e5e9a37c235 100644
+--- a/kdecoration/CMakeLists.txt
++++ b/kdecoration/CMakeLists.txt
+@@ -36,7 +36,9 @@ set(breezedecoration_SRCS
+     breezedecoration.cpp
+     breezeexceptionlist.cpp
+     breezesettingsprovider.cpp
+-    breezesizegrip.cpp)
++    breezesizegrip.cpp
++    qubesutils.cpp
++    qubeslabels.cpp)
+ 
+ kconfig_add_kcfg_files(breezedecoration_SRCS breezesettings.kcfgc)
+ 
+@@ -83,6 +85,7 @@ target_link_libraries(breezedecoration
+ if(BREEZE_HAVE_X11)
+   target_link_libraries(breezedecoration
+     PUBLIC
++      X11 # Required for Qubes OS
+       Qt5::X11Extras
+       XCB::XCB)
+ endif()
+diff --git a/kdecoration/breezedecoration.cpp b/kdecoration/breezedecoration.cpp
+index 20637bb35d3f..b09d62154f01 100644
+--- a/kdecoration/breezedecoration.cpp
++++ b/kdecoration/breezedecoration.cpp
+@@ -49,6 +49,9 @@
+ 
+ #include <cmath>
+ 
++#include "qubeslabels.h"
++#include "qubesutils.h"
++
+ K_PLUGIN_FACTORY_WITH_JSON(
+     BreezeDecoFactory,
+     "breeze.json",
+@@ -74,6 +77,9 @@ namespace Breeze
+     Decoration::Decoration(QObject *parent, const QVariantList &args)
+         : KDecoration2::Decoration(parent, args)
+         , m_animation( new QPropertyAnimation( this ) )
++        , m_vmName()
++        , m_vmLabel()
++        , m_vmDataInit(false)
+     {
+         g_sDecoCount++;
+     }
+@@ -102,10 +108,16 @@ namespace Breeze
+     }
+ 
+     //________________________________________________________________
+-    QColor Decoration::titleBarColor() const
++    QColor Decoration::titleBarColor()
+     {
+-
+         auto c = client().data();
++
++        initVmDataIfNeeded(c->windowId());
++
++        return m_vmLabel.color;
++
++        /* Disabled for QubesOS! */
++        /*
+         if( hideTitleBar() ) return c->color( ColorGroup::Inactive, ColorRole::TitleBar );
+         else if( m_animation->state() == QPropertyAnimation::Running )
+         {
+@@ -114,7 +126,7 @@ namespace Breeze
+                 c->color( ColorGroup::Active, ColorRole::TitleBar ),
+                 m_opacity );
+         } else return c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::TitleBar );
+-
++        */
+     }
+ 
+     //________________________________________________________________
+@@ -133,10 +145,17 @@ namespace Breeze
+     }
+ 
+     //________________________________________________________________
+-    QColor Decoration::fontColor() const
++    QColor Decoration::fontColor()
+     {
+ 
+         auto c = client().data();
++
++        initVmDataIfNeeded(c->windowId());
++
++        return c->isActive() ? m_vmLabel.color_text_active : m_vmLabel.color_text_inactive;
++
++        /* Disabled for QubesOS! */
++        /*
+         if( m_animation->state() == QPropertyAnimation::Running )
+         {
+             return KColorUtils::mix(
+@@ -144,7 +163,7 @@ namespace Breeze
+                 c->color( ColorGroup::Active, ColorRole::Foreground ),
+                 m_opacity );
+         } else return  c->color( c->isActive() ? ColorGroup::Active : ColorGroup::Inactive, ColorRole::Foreground );
+-
++        */
+     }
+ 
+     //________________________________________________________________
+@@ -518,11 +537,15 @@ namespace Breeze
+ 
+         painter->restore();
+ 
++        // get caption
++        initVmDataIfNeeded(c->windowId());
++        const QString captionWithVmName = m_vmName + " " + c->caption();
++
+         // draw caption
+         painter->setFont(s->font());
+         painter->setPen( fontColor() );
+         const auto cR = captionRect();
+-        const QString caption = painter->fontMetrics().elidedText(c->caption(), Qt::ElideMiddle, cR.first.width());
++        const QString caption = painter->fontMetrics().elidedText(captionWithVmName, Qt::ElideMiddle, cR.first.width());
+         painter->drawText(cR.first, cR.second | Qt::TextSingleLine, caption);
+ 
+         // draw all buttons
+@@ -531,6 +554,20 @@ namespace Breeze
+     }
+ 
+     //________________________________________________________________
++    void Decoration::initVmDataIfNeeded(const WId windowId)
++    {
++        if (m_vmDataInit)
++        {
++            return;
++        }
++
++        m_vmName  = get_qubes_vmname(windowId);
++        m_vmLabel = get_qubes_label(windowId);
++
++        m_vmDataInit = true;
++    }
++
++    //________________________________________________________________
+     int Decoration::buttonHeight() const
+     {
+         const int baseSize = settings()->gridUnit();
+@@ -721,6 +758,7 @@ namespace Breeze
+         }
+     }
+ 
++
+ } // namespace
+ 
+ 
+diff --git a/kdecoration/breezedecoration.h b/kdecoration/breezedecoration.h
+index d4e5d0ebb08c..d29bae869e6f 100644
+--- a/kdecoration/breezedecoration.h
++++ b/kdecoration/breezedecoration.h
+@@ -33,6 +33,8 @@
+ #include <QPropertyAnimation>
+ #include <QVariant>
+ 
++#include "qubeslabels.h"
++
+ namespace KDecoration2
+ {
+     class DecorationButton;
+@@ -81,9 +83,9 @@ namespace Breeze
+ 
+         //*@name colors
+         //@{
+-        QColor titleBarColor( void ) const;
++        QColor titleBarColor( void );
+         QColor outlineColor( void ) const;
+-        QColor fontColor( void ) const;
++        QColor fontColor( void );
+         //@}
+ 
+         //*@name maximization modes
+@@ -146,6 +148,12 @@ namespace Breeze
+         //* active state change opacity
+         qreal m_opacity = 0;
+ 
++        //* QubesOS-related members
++        QString m_vmName;
++        QubesLabel m_vmLabel;
++        bool m_vmDataInit;
++
++        void initVmDataIfNeeded(WId windowId);
+     };
+ 
+     bool Decoration::hasNoBorders( void ) const
+@@ -163,7 +171,15 @@ namespace Breeze
+     bool Decoration::isMaximized( void ) const { return client().data()->isMaximized() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+     bool Decoration::isMaximizedHorizontally( void ) const { return client().data()->isMaximizedHorizontally() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+     bool Decoration::isMaximizedVertically( void ) const { return client().data()->isMaximizedVertically() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+-    bool Decoration::hideTitleBar( void ) const { return m_internalSettings->hideTitleBar() && !client().data()->isShaded(); }
++
++    bool Decoration::hideTitleBar( void ) const
++    {
++        /* Disabled for QubesOS! */
++        return false;
++        /*
++        return m_internalSettings->hideTitleBar() && !client().data()->isShaded();
++        */
++    }
+ 
+ }
+ 
+diff --git a/kdecoration/qubeslabels.cpp b/kdecoration/qubeslabels.cpp
+new file mode 100644
+index 000000000000..d333381d5854
+--- /dev/null
++++ b/kdecoration/qubeslabels.cpp
+@@ -0,0 +1,13 @@
++#include "qubeslabels.h"
++
++QubesLabel QubesLabels[] = {
++    QubesLabel (QUBES_LABEL_DOM0, "dom0", QColor::fromHsv (0, 0, 220), Qt::black),
++    QubesLabel (QUBES_LABEL_RED, "red", QColor::fromHsv (0,200, 220)),
++    QubesLabel (QUBES_LABEL_ORANGE, "orange", QColor::fromHsv (30,255, 250), Qt::black, Qt::darkGray),
++    QubesLabel (QUBES_LABEL_YELLOW, "yellow", QColor::fromHsv (60,250, 220), Qt::black, Qt::darkGray),
++    QubesLabel (QUBES_LABEL_GREEN, "green", QColor::fromHsv (120,250, 200), Qt::black, Qt::darkGray),
++    QubesLabel (QUBES_LABEL_GRAY, "gray", QColor::fromHsv (0,0, 150), Qt::black),
++    QubesLabel (QUBES_LABEL_BLUE, "blue", QColor::fromHsv (220,200, 220)),
++    QubesLabel (QUBES_LABEL_PURPLE, "purple", QColor::fromHsv (300,255, 99)),
++    QubesLabel (QUBES_LABEL_BLACK, "black", QColor::fromHsv (0, 0, 0))
++};
+diff --git a/kdecoration/qubeslabels.h b/kdecoration/qubeslabels.h
+new file mode 100644
+index 000000000000..b24400c175df
+--- /dev/null
++++ b/kdecoration/qubeslabels.h
+@@ -0,0 +1,45 @@
++#ifndef QUBES_LABELS_H
++#define QUBES_LABELS_H
++
++#include <QColor>
++#include <QString>
++
++class QubesLabel {
++public:
++    QubesLabel ()
++    {
++        index = 0;
++        name = "";
++    }
++
++    QubesLabel(int _index, const QString& _name, const QColor& _color,
++               const QColor& active_text=Qt::white,
++               const QColor& inactive_text=Qt::gray)
++        : name(_name)
++        , color(_color)
++        , color_text_active(active_text)
++        , color_text_inactive(inactive_text)
++    {
++        index = _index;
++    }
++
++    int index;
++    QString name;
++    QColor color, color_text_active, color_text_inactive;
++};
++
++extern QubesLabel QubesLabels[];
++
++#define QUBES_LABEL_DOM0 0
++#define QUBES_LABEL_RED 1
++#define QUBES_LABEL_ORANGE 2
++#define QUBES_LABEL_YELLOW 3
++#define QUBES_LABEL_GREEN 4
++#define QUBES_LABEL_GRAY 5
++#define QUBES_LABEL_BLUE 6
++#define QUBES_LABEL_PURPLE 7
++#define QUBES_LABEL_BLACK 8
++
++#define MAX_QUBES_LABELS 9
++
++#endif
+diff --git a/kdecoration/qubesutils.cpp b/kdecoration/qubesutils.cpp
+new file mode 100644
+index 000000000000..7421533e6fcd
+--- /dev/null
++++ b/kdecoration/qubesutils.cpp
+@@ -0,0 +1,115 @@
++/*
++* Copyright 2015  Qubes OS developers
++*
++* This program is free software; you can redistribute it and/or
++* modify it under the terms of the GNU General Public License as
++* published by the Free Software Foundation; either version 2 of
++* the License or (at your option) version 3 or any later version
++* accepted by the membership of KDE e.V. (or its successor approved
++* by the membership of KDE e.V.), which shall act as a proxy
++* defined in Section 14 of version 3 of the license.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++* GNU General Public License for more details.
++*
++* You should have received a copy of the GNU General Public License
++* along with this program.  If not, see <http://www.gnu.org/licenses/>.
++*/
++
++#include <QX11Info>
++
++#include <X11/Xlib.h>
++#include <X11/Xatom.h>
++
++#include "qubesutils.h"
++
++QubesLabel get_qubes_label(const WId wid)
++{
++    Atom atom_label = XInternAtom (QX11Info::display(), "_QUBES_LABEL", True);
++    if (atom_label == 0) {
++        return QubesLabels[QUBES_LABEL_DOM0];
++    }
++
++    Atom actual_type;
++    int actual_format;
++    unsigned long nitems = 0, bytes_left;
++    char *data = 0;
++
++    int result = XGetWindowProperty (QX11Info::display(), wid, atom_label,
++
++            0L /* offset */,
++            1L /* length */,
++            false /* don't delete */,
++            XA_CARDINAL,
++            &actual_type,
++            &actual_format,
++            &nitems,
++            &bytes_left,
++            (uchar**)(&data));
++
++    if (result != Success || nitems != 1) {
++        // ERROR? Only Dom0 Windows don't have this property set...
++        return QubesLabels[QUBES_LABEL_DOM0];
++    }
++
++    int label = (int)*data;
++    return QubesLabels[label];
++}
++
++QString get_qubes_vmname(const WId wid)
++{
++    const QString name_dom0 = "[Dom0]";
++    const QString name_error = "[ERROR Reading VM Name?!]";
++
++    Atom atom_label = XInternAtom (QX11Info::display(), "_QUBES_VMNAME", True);
++    if (atom_label == 0) {
++        return name_dom0;
++    }
++
++    Atom actual_type;
++    int actual_format;
++    unsigned long nitems = 0, bytes_left;
++    char *data = 0;
++
++    int result = XGetWindowProperty (QX11Info::display(), wid, atom_label,
++            0L /* offset */,
++            0L /* length */,
++            false /* don't delete */,
++            AnyPropertyType,
++            &actual_type,
++            &actual_format,
++            &nitems,
++            &bytes_left,
++            (uchar**)(&data));
++
++    if (result != Success) {
++        // ERROR? Only Dom0 Windows don't have this property set...
++        return name_dom0;
++    }
++
++    if (bytes_left > 0) {
++
++        int result = XGetWindowProperty (QX11Info::display(), wid, atom_label,
++                0L /* offset */,
++                bytes_left /* length */,
++                false /* don't delete */,
++                AnyPropertyType,
++                &actual_type,
++                &actual_format,
++                &nitems,
++                &bytes_left,
++                (uchar**)(&data));
++
++        if (result != Success) {
++            // ERROR? Only Dom0 Windows don't have this property set...
++            return name_error;
++        }
++
++        return "[" + QString (data) + "]";
++    } else {
++        // ERROR? Only Dom0 Windows don't have this property set...
++        return name_dom0;
++    }
++}
+diff --git a/kdecoration/qubesutils.h b/kdecoration/qubesutils.h
+new file mode 100644
+index 000000000000..9db079febbeb
+--- /dev/null
++++ b/kdecoration/qubesutils.h
+@@ -0,0 +1,33 @@
++#ifndef QUBES_UTILS_H
++#define QUBES_UTILS_H
++
++/*
++* Copyright 2015  Qubes OS developers
++*
++* This program is free software; you can redistribute it and/or
++* modify it under the terms of the GNU General Public License as
++* published by the Free Software Foundation; either version 2 of
++* the License or (at your option) version 3 or any later version
++* accepted by the membership of KDE e.V. (or its successor approved
++* by the membership of KDE e.V.), which shall act as a proxy
++* defined in Section 14 of version 3 of the license.
++*
++* This program is distributed in the hope that it will be useful,
++* but WITHOUT ANY WARRANTY; without even the implied warranty of
++* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++* GNU General Public License for more details.
++*
++* You should have received a copy of the GNU General Public License
++* along with this program.  If not, see <http://www.gnu.org/licenses/>.
++*/
++
++#include <QString>
++#include <KWindowInfo>
++#include <xcb/xcb.h>
++
++#include "qubeslabels.h"
++
++QubesLabel get_qubes_label(const WId wid);
++QString get_qubes_vmname(const WId wid);
++
++#endif
+-- 
+2.5.0
+

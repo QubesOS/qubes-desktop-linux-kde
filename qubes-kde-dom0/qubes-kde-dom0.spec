@@ -2,13 +2,14 @@
 
 %if 0%{?qubes_builder}
 %define _sourcedir %(pwd)/qubes-kde-dom0
+%define qubes_kde_dom0_version %(cat version)
 %endif
 %{!?version: %define version %(cat version)}
 
 
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
-Version: %{version}
+Version: %{qubes_kde_dom0_version}
 Release: 1%{?dist}
 
 License: GPL2
@@ -45,7 +46,10 @@ Requires: dejavu-sans-fonts
 # Qubes-customized menus
 Requires: qubes-menus
 
-Requires: kde-style-plastik-for-qubes
+# Custom Breeze style for Qubes
+Requires: plasma-breeze-qubes
+Requires: plasma-breeze-qubes-common
+Requires: kde-style-breeze-qubes
 
 Source0: kfileplaces-bookmarks.xml
 Source1: kickoffrc

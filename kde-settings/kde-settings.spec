@@ -1,6 +1,9 @@
 # THIS SPECFILE IS FOR F18 ONLY!
 %if 0%{?qubes_builder}
 %define _sourcedir %(pwd)/kde-settings
+%define kde_settings_epoch %(cat epoch)
+%else
+%define kde_settings_epoch 0
 %endif
 %{!?epoch: %define epoch %(cat epoch)}
 
@@ -9,7 +12,7 @@
 
 Summary: Config files for kde
 Name:    kde-settings
-Epoch:   %{epoch}
+Epoch:   %{kde_settings_epoch}
 Version: 4.9
 Release: %{rel}.7%{?dist}
 

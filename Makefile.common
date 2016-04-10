@@ -54,7 +54,7 @@ get-sources: $(SRC_FILE)
 
 $(SRC_FILE):
 ifneq ($(SRC_FILE), None)
-	@wget -q $(URL)
+	@wget --progress=dot:mega $(URL)
 endif
 
 .PHONY: verify-sources

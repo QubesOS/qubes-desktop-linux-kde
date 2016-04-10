@@ -42,9 +42,11 @@ ifdef URL
 	SRC_FILE := $(notdir $(URL))
 endif
 endif
+ifndef DO_NOT_USE_DISTFILES_MIRROR
 ifdef DISTFILES_MIRROR
 ifdef URL
 URL := $(DISTFILES_MIRROR)$(notdir $(URL))
+endif
 endif
 endif
 

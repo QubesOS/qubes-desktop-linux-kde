@@ -62,7 +62,7 @@ Requires:       kf5-filesystem
 
 Requires:       %{name}-common = %{version}-%{release}
 
-Conflicts:      plasma-breeze
+Obsoletes:      plasma-breeze
 Provides:       plasma-breeze
 
 %description
@@ -72,7 +72,7 @@ Provides:       plasma-breeze
 Summary:        Common files shared between KDE 4 and Plasma 5 versions of the Breeze style
 BuildArch:      noarch
 
-Conflicts:      plasma-breeze-common
+Obsoletes:      plasma-breeze-common
 Provides:       plasma-breeze-common
 %description    common
 %{summary}.
@@ -86,7 +86,7 @@ Requires:       %{name}-common = %{version}-%{release}
 Obsoletes:      plasma-breeze-kde4 < 5.1.95
 Provides:       plasma-breeze-kde4%{?_isa} = %{version}-%{release}
 
-Conflicts:      kde-style-breeze
+Obsoletes:      kde-style-breeze
 Provides:       kde-style-breeze
 
 %description -n kde-style-breeze-qubes

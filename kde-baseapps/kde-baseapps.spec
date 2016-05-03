@@ -1,27 +1,28 @@
 %if 0%{?qubes_builder}
 %define _sourcedir %(pwd)/kde-baseapps
 %endif
-%{!?version: %define version %(cat version)}
-%{!?epoch: %define epoch %(cat epoch)}
+
+# trim changelog included in binary rpms
+%global _changelog_trimtime %(date +%s -d "1 year ago")
+
+# enable tests
+%global tests 1
 
 Name:    kde-baseapps
 Summary: KDE Core Applications 
-Epoch:   %{epoch}
-Version: %{version}
+Epoch:   2000
+Version: 15.12.3
 Release: 1%{?dist}
 
-License: GPLv2
-URL:     https://projects.kde.org/projects/kde/kde-baseapps 
+License: GPLv2 and GFDL
+URL:     https://projects.kde.org/kde-baseapps
 %global revision %(echo %{version} | cut -d. -f3)
 %if %{revision} >= 50
 %global stable unstable
 %else
 %global stable stable
 %endif
-#override
-%define stable Attic
-Source0: ftp://ftp.kde.org/pub/kde/%{stable}/%{version}/src/kde-baseapps-%{version}.tar.xz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source0: http://download.kde.org/%{stable}/applications/%{version}/src/kde-baseapps-%{version}.tar.xz
 
 ## upstreamable patches
 # search path for plugins
@@ -33,14 +34,16 @@ Patch2: kdebase-4.2.1-home-icon.patch
 # fix disabling automatic spell checking in the Konqueror UI (kde#228593)
 Patch3: kdebase-4.4.0-konqueror-kde#228593.patch
 
-# Password & User account becomes non responding
-Patch4: kde-baseapps-4.12.2-bz#609039.patch
-
 # add x-scheme-handler/http for konqueror so it can be set
 # as default browser in GNOME
-Patch5: kde-baseapps-4.9.2-konqueror-mimetyp.patch
+Patch5: kde-baseapps-4.14.3-konq_mimetype.patch
 
 ## upstream patches
+
+# optional runtime dep for kcm_useraccount, see https://git.reviewboard.kde.org/r/110875/
+%if 0%{?fedora} || 0%{?rhel} > 6
+Requires: accountsservice
+%endif
 
 ## Qubes patches
 Patch100: kde-baseapps-4.12-qubes.patch
@@ -49,7 +52,7 @@ Patch100: kde-baseapps-4.12-qubes.patch
 Requires: eject
 %endif
 
-Requires: %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# kdepasswd uses chfn
 Requires: util-linux
 
 Obsoletes: kdebase < 6:4.7.97-10
@@ -60,13 +63,33 @@ Provides:  kdebase4 = %{version}-%{release}
 
 BuildRequires: gcc-c++
 BuildRequires: desktop-file-utils
-BuildRequires: kdelibs4-devel >= %{version}
+%if 0%{fedora} < 22
+BuildRequires: baloo-devel >= 4.14
+BuildRequires: baloo-widgets-devel >= 4.14
+BuildRequires: kactivities-devel
+BuildRequires: kfilemetadata-devel >= 4.14
+%endif
+BuildRequires: kdelibs4-devel >= 4.14
+%if 0%{?fedora} > 21
+BuildRequires: libappstream-glib
+%endif
 %if 0%{?fedora}
 BuildRequires: libtidy-devel
 %endif
 BuildRequires: pkgconfig
 BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(libstreams)
+BuildRequires: pkgconfig(xrender)
+BuildRequires: pkgconfig(zlib)
+
+%if 0%{?tests}
+%global _kde4_build_tests -DKDE4_BUILD_TESTS:BOOL=ON
+# %%%check
+BuildRequires: dbus-x11 xorg-x11-server-Xvfb
+%endif
+
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: kdepasswd = %{epoch}:%{version}-%{release}
+Requires: kdialog = %{epoch}:%{version}-%{release}
 
 # for upgrade path, when konsole, kwrite were split out since 4.7.90
 %if 0%{?fedora} < 17 && 0%{?rhel} < 7
@@ -76,17 +99,16 @@ Requires: kwrite
 
 %description
 Metapackage for Core applications of KDE 4, including:
-dolphin : File manager
 kdepasswd : Changes a UNIX password
 kdialog : Nice dialog boxes from shell scripts
 keditbookmarks : Bookmark organizer and editor
 kfind : File find utility
 konqueror : Web browser, file manager and document viewer
-plasma_applet_folderview : folderview plasma applet
 
 %package common
 Summary: Common files for %{name}
 Conflicts: kde-baseapps < 4.12.0-2
+Obsoletes: kde-plasma-folderview < 6:%{version}-%{release}
 BuildArch: noarch
 %description common
 %{summary}
@@ -96,9 +118,8 @@ Summary: Runtime libraries for %{name}
 Obsoletes: kdebase-libs < 6:4.7.97-10
 Provides:  kdebase-libs < 6:%{version}-%{release}
 Provides:  kdebase-libs%{?_isa} < 6:%{version}-%{release}
-# lib(dolphin|konq) likely require appsdir resources, and other goodies
-Requires: %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-%{?_kde4_version:Requires: kdelibs4%{?_isa} >= %{_kde4_version}}
+Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: libkonq%{?_isa} = %{epoch}:%{version}-%{release}
 %description libs
 %{summary}.
 
@@ -110,7 +131,6 @@ Obsoletes: kdebase4-devel < %{version}-%{release}
 Provides:  kdebase4-devel = %{version}-%{release}
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires: libkonq%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires: kdelibs4-devel
 %description devel
 %{summary}.
@@ -118,14 +138,14 @@ Requires: kdelibs4-devel
 %package -n kdepasswd
 Summary: Changes your UNIX password
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires: kde-runtime%{?_kde4_version: >= %{_kde4_version}}
+%{?kde_runtime_requires}
 %description -n kdepasswd
 This application allows you to change your UNIX password.
 
 %package -n kdialog
 Summary:  Nice dialog boxes from shell scripts
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires: kde-runtime%{?_kde4_version: >= %{_kde4_version}}
+%{?kde_runtime_requires}
 %description -n kdialog
 KDialog can be used to show nice dialog boxes from shell scripts.
 
@@ -142,8 +162,9 @@ Requires: kdelibs4%{?_isa}%{?_kde4_version: >= %{_kde4_version}}
 %patch0 -p2 -b .nsplugins-paths
 %patch2 -p2 -b .home-icon
 %patch3 -p2 -b .kde#228593
-%patch4 -p1 -b .bz#609039
-%patch5 -p1 -b .mimetyp.patch
+%patch5 -p1 -b .konq_mimetype
+
+sed -i -e 's|^add_subdirectory(folderview)|#add_subdirectory(folderview)|g' plasma/applets/CMakeLists.txt
 
 %patch100 -p1 -b .qubes
 
@@ -157,7 +178,6 @@ make %{?_smp_mflags} -C %{_target_platform}
 
 
 %install
-rm -rf %{buildroot}
 make install/fast DESTDIR=%{buildroot} -C %{_target_platform}
 
 # create/own some dirs 
@@ -165,7 +185,8 @@ mkdir -p %{buildroot}%{_kde4_appsdir}/konqueror/{kpartplugins,icons,opensearch}
 
 ## unpackaged files
 # libs for which there is no (public) api
-rm -fv %{buildroot}%{_kde4_libdir}/lib{dolphin,kbookmarkmodel_,konqueror}private.so
+rm -fv %{buildroot}%{_kde4_libdir}/lib{kbookmarkmodel_,konqueror}private.so
+rm -fv %{buildroot}%{_kde4_libdir}/libdolphinprivate4.so
 # omit konqsidebarplugin api bits (for now), nothing uses it afaict -- rex
 rm -fv %{buildroot}%{_kde4_libdir}/libkonqsidebarplugin.so
 rm -fv %{buildroot}%{_kde4_includedir}/konqsidebarplugin.h
@@ -187,23 +208,35 @@ do
 done
 popd
 
+# fix documentation multilib conflict in index.cache
+for f in konqueror; do
+   bunzip2 %{buildroot}%{_kde4_docdir}/HTML/en/$f/index.cache.bz2
+   sed -i -e 's!name="id[a-z]*[0-9]*"!!g' %{buildroot}%{_kde4_docdir}/HTML/en/$f/index.cache
+   sed -i -e 's!#id[a-z]*[0-9]*"!!g' %{buildroot}%{_kde4_docdir}/HTML/en/$f/index.cache
+   bzip2 -9 %{buildroot}%{_kde4_docdir}/HTML/en/$f/index.cache
+done
+
 # Qubes cleanup
 rm -f %{buildroot}%{_kde4_appsdir}/kbookmark/directory_bookmarkbar.desktop
 rm -f %{buildroot}/usr/share/man/man1/kbookmarkmerger.1
 rm -f %{buildroot}/usr/share/man/man1/kfind.1
+rm -rf %{buildroot}/usr/share/doc/HTML/en/kfind
+rm -rf %{buildroot}/usr/share/doc/HTML/en/konqueror
+# part of konqueror
+rm -f %{buildroot}/usr/share/dbus-1/interfaces/org.kde.FavIcon.xml
 
-%find_lang %{name} --all-name --with-kde --without-mo
 %find_lang kdepasswd --with-kde --without-mo
 
 
 %check
+%if 0%{?tests}
+export CTEST_OUTPUT_ON_FAILURE=1
+## setting semi-arbitrary 30 second timeout, KonqPopupMenuTest, seems to hang or take a really long time --rex
+time xvfb-run -a dbus-launch --exit-with-session make -C %{_target_platform}/ test ARGS="--output-on-failure --timeout 30" ||:
+%endif
 for f in %{buildroot}%{_kde4_datadir}/applications/kde4/*.desktop ; do
   desktop-file-validate $f
 done
-
-
-%clean
-rm -rf %{buildroot}
 
 
 %post
@@ -224,31 +257,15 @@ if [ $1 -eq 0 ] ; then
   update-desktop-database -q &> /dev/null ||:
 fi
 
-%files -f %{name}.lang
-%doc COPYING
-%{_kde4_bindir}/kdepasswd
-%{_kde4_bindir}/kdialog
-%{_kde4_datadir}/applications/kde4/kdepasswd.desktop
-%{_kde4_appsdir}/konqueror/pics/*
-%{_kde4_appsdir}/kdm/
-%{_kde4_datadir}/config.kcfg/*
-%{_datadir}/dbus-1/interfaces/*
-%{_kde4_datadir}/kde4/services/*.desktop
-%{_kde4_datadir}/kde4/services/kded/*.desktop
-%{_kde4_datadir}/kde4/servicetypes/*.desktop
-%{_kde4_libdir}/kde4/*.so
-%{_kde4_datadir}/templates/*.desktop
-%{_kde4_datadir}/templates/.source/*
 
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
+%files
+# empty metapackage
 
 %files libs
-%{_kde4_libdir}/libkonq.so*
+# empty metapackage
 
 %files common
 %doc COPYING COPYING.DOC COPYING.LIB
-
 
 
 %post -n libkonq -p /sbin/ldconfig
@@ -293,13 +310,258 @@ fi
 %{_kde4_bindir}/kdialog
 %{_datadir}/dbus-1/interfaces/org.kde.kdialog.ProgressDialog.xml
 
-
 %changelog
-* Sat Dec 29 2012 Rex Dieter <rdieter@fedoraproject.org> - 4.9.5-1
-- 4.9.5
+* Sun Mar 13 2016 Rex Dieter <rdieter@fedoraproject.org> - 15.12.3-1
+- 15.12.3
 
-* Mon Dec 10 2012 Than Ngo <than@redhat.com> - 4.9.4-2
-- apply upstream patch to fix regression in dolphin
+* Fri Feb 12 2016 Rex Dieter <rdieter@fedoraproject.org> - 15.12.2-1
+- 15.12.2
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 15.12.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Fri Jan 08 2016 Rex Dieter <rdieter@fedoraproject.org> 15.12.1-1
+- 15.12.1, update URL
+
+* Sun Dec 20 2015 Rex Dieter <rdieter@fedoraproject.org> 15.12.0-1
+- 15.12.0
+
+* Wed Nov 18 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.08.3-1
+- 15.08.3
+
+* Wed Nov 18 2015 Rex Dieter <rdieter@fedoraproject.org> 15.08.2-2
+- rebuild (tidy)
+
+* Wed Oct 14 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.08.2-1
+- 15.08.2
+
+* Wed Oct 14 2015 Rex Dieter <rdieter@fedoraproject.org> 
+- 15.08.1-3
+- konqueror: +Requires: keditbookmarks
+- keditbookmarks-libs: fix description/summary
+
+* Fri Oct 02 2015 Rex Dieter <rdieter@fedoraproject.org> 15.08.1-2
+- drop use of kde4-specific /usr/share/autostart
+
+* Tue Sep 15 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.08.1-1
+- 15.08.1
+- dolphin4-libs: move dolphinpart here, drop dep on main pkg
+- konqueror: Requires: dolphin4-libs (instead of dolphin4)
+
+* Wed Sep 02 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.08.0-2
+- konqueror: Home.desktop here
+- -libs: s/dolphin-libs/dolphin4-libs/
+
+* Thu Aug 20 2015 Than Ngo <than@redhat.com> - 15.08.0-1
+- 15.08.0
+
+* Sun Jun 28 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.04.3-1
+- 15.04.3
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 15.04.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Tue Jun 02 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.04.2-1
+- 15.04.2
+
+* Thu May 14 2015 Rex Dieter <rdieter@fedoraproject.org> 15.04.1-1
+- 15.04.1
+
+* Fri May 01 2015 Rex Dieter <rdieter@fedoraproject.org> 15.04.0-3
+- Added folders to left panel "Places" disappear (#345174)
+
+* Wed Apr 15 2015 Rex Dieter <rdieter@fedoraproject.org> 15.04.0-2
+- dolphin: Recommends: ruby (servicemenuinstallation)
+
+* Tue Apr 14 2015 Rex Dieter <rdieter@fedoraproject.org> - 15.04.0-1
+- 15.04.0
+
+* Wed Mar 11 2015 Rex Dieter <rdieter@fedoraproject.org> - 14.12.3-3
+- lower kfmclient_dir.desktop IntialPreference to 9, lower than dolphin 10 (f22+)
+- omit kde-plasma-folderview (f22+)
+
+* Tue Mar 10 2015 Rex Dieter <rdieter@fedoraproject.org> 14.12.3-2
+- drop unused strigi/soprano build deps
+
+* Sun Mar 01 2015 Rex Dieter <rdieter@fedoraproject.org> - 14.12.3-1
+- 14.12.3
+
+* Tue Feb 24 2015 Than Ngo <than@redhat.com> - 14.12.2-1
+- 14.12.2
+
+* Thu Feb 12 2015 Rex Dieter <rdieter@fedoraproject.org> 14.12.1-2
+- dolphin: Requires: konsole4-part
+
+* Sat Jan 17 2015 Rex Dieter <rdieter@fedoraproject.org> - 14.12.1-1
+- 14.12.1
+
+* Sat Dec 06 2014 Rex Dieter <rdieter@fedoraproject.org>  14.11.97-1
+- 14.11.97
+
+* Mon Nov 17 2014 Rex Dieter <rdieter@fedoraproject.org> 4.14.3-4
+- add x-scheme-handler/http to kfmclient_html.desktop (kde#341055)
+
+* Tue Nov 11 2014 Rex Dieter <rdieter@fedoraproject.org> 4.14.3-3
+- respin tarball
+
+* Tue Nov 11 2014 Rex Dieter <rdieter@fedoraproject.org> 4.14.3-2
+- pull in upstream fix "Unbreak session management" for konqueror
+
+* Sat Nov 08 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.14.3-1
+- 4.14.3
+
+* Sat Oct 11 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.14.2-1
+- 4.14.2
+
+* Thu Sep 25 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.14.1-2
+- pull in upstream fixes, particularly...
+- Fix scrollbar appearing on FolderView (kde#294795)
+
+* Mon Sep 15 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.14.1-1
+- 4.14.1
+
+* Sat Aug 16 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.14.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Thu Aug 14 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.14.0-1
+- 4.14.0
+
+* Tue Aug 05 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.13.97-1
+- 4.13.97
+
+* Mon Jul 14 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.13.3-1
+- 4.13.3
+
+* Mon Jun 09 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.13.2-1
+- 4.13.2
+
+* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.13.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Sat May 10 2014 Rex Dieter <rdieter@fedoraproject.org> 4.13.1-1
+- 4.13.1
+
+* Sat May 03 2014 Rex Dieter <rdieter@fedoraproject.org> 4.13.0-4
+- konqueror: omit dup'd servicemenu bits (in dolphin pkg)
+
+* Sat May 03 2014 Rex Dieter <rdieter@fedoraproject.org> 4.13.0-3
+- konqueror: Requires: mozilla-filesystem (#1000673)
+
+* Mon Apr 14 2014 Rex Dieter <rdieter@fedoraproject.org> 4.13.0-2
+- BR: kfilemetadata-devel
+
+* Sat Apr 12 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.13.0-1
+- 4.13.0
+
+* Fri Apr 04 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.12.97-1
+- 4.12.97
+
+* Sat Mar 22 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.12.95-1
+- 4.12.95
+
+* Wed Mar 19 2014 Rex Dieter <rdieter@fedoraproject.org> 4.12.90-2
+- -devel: Requires: kdelibs4-devel (regression, dep got lost in 4.12 somewhere)
+
+* Tue Mar 18 2014 Rex Dieter <rdieter@fedoraproject.org> 4.12.90-1
+- 4.12.90
+
+* Sun Mar 09 2014 Rex Dieter <rdieter@fedoraproject.org> 4.12.3-2
+- konqueror: Obsoletes/Provides: konq-plugins
+
+* Sat Mar 01 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.12.3-1
+- 4.12.3
+
+* Sat Feb 01 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.12.2-2
+- rebase chfn patch, +Requires: util-linux (#609039)
+
+* Fri Jan 31 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.12.2-1
+- 4.12.2
+
+* Fri Jan 10 2014 Rex Dieter <rdieter@fedoraproject.org> - 4.12.1-1
+- 4.12.1
+
+* Tue Dec 31 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.12.0-3
+- dolphin,konqueror: Requires: kdialog
+
+* Sun Dec 29 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.12.0-2
+- impliment split packaging
+- trim changelog
+- License: +GFDL
+
+* Thu Dec 19 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.12.0-1
+- 4.12.0
+
+* Sun Dec 01 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.11.97-1
+- 4.11.97
+
+* Thu Nov 21 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.11.95-1
+- 4.11.95
+
+* Sat Nov 16 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.11.90-1
+- 4.11.90
+
+* Sat Nov 09 2013 Rex Dieter <rdieter@fedoraproject.org> 4.11.3-2
+- include some post v4.11.3 commits, including fix for dolphin kde bug #318683
+
+* Sat Nov 02 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.11.3-1
+- 4.11.3
+
+* Sat Sep 28 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.11.2-1
+- 4.11.2
+
+* Tue Sep 03 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.11.1-1
+- 4.11.1
+
+* Thu Aug 08 2013 Than Ngo <than@redhat.com> - 4.11.0-1
+- 4.11.0
+
+* Thu Jul 25 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.10.97-1
+- 4.10.97
+
+* Tue Jul 23 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.10.95-1
+- 4.10.95
+
+* Thu Jun 27 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.10.90-1
+- 4.10.90
+
+* Tue Jun 11 2013 Rex Dieter <rdieter@fedoraproject.org> 4.10.4-2
+- kcm_useraccount: support accountsservice (#950635)
+
+* Sat Jun 01 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.10.4-1
+- 4.10.4
+
+* Mon May 06 2013 Than Ngo <than@redhat.com> - 4.10.3-1
+- 4.10.3
+
+* Mon Apr 29 2013 Than Ngo <than@redhat.com> - 4.10.2-2
+- fix multilib issue
+
+* Sun Mar 31 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.10.2-1
+- 4.10.2
+
+* Sat Mar 02 2013 Rex Dieter <rdieter@fedoraproject.org> 4.10.1-1
+- 4.10.1
+
+* Thu Jan 31 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.10.0-1
+- 4.10.0
+
+* Sun Jan 20 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.9.98-1
+- 4.9.98
+
+* Fri Jan 04 2013 Rex Dieter <rdieter@fedoraproject.org> - 4.9.97-1
+- 4.9.97
+
+* Thu Dec 20 2012 Rex Dieter <rdieter@fedoraproject.org> - 4.9.95-1
+- 4.9.95
+
+* Thu Dec 13 2012 Rex Dieter <rdieter@fedoraproject.org> 4.9.90-3
+- Dolphin cannot start due to symbol lookup error (#886964)
+
+* Mon Dec 03 2012 Rex Dieter <rdieter@fedoraproject.org> 4.9.90-2
+- BR: kactivites-devel nepomuk-core-devel
+
+* Mon Dec 03 2012 Rex Dieter <rdieter@fedoraproject.org> 4.9.90-1
+- 4.9.90 (4.10 beta2)
 
 * Mon Dec 03 2012 Than Ngo <than@redhat.com> - 4.9.4-1
 - 4.9.4
@@ -866,175 +1128,3 @@ fi
 
 * Mon Jan 07 2008 Than Ngo <than@redhat.com> 4.0.0-1
 - 4.0.0
-
-* Tue Dec 25 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.97.0-5
-- Obsoletes: dolphin, d3lphin, Provides: dolphin (F9+)
-
-* Fri Dec 14 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.97.0-4
-- Obsoletes: -extras (f9+)
-
-* Wed Dec 12 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.97.0-3
-- rebuild for changed _kde4_includedir
-
-* Sun Dec 09 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.97.0-2
-- rm konsoleprofile when building as kdebase4, does nothing with KDE 3 konsole
-
-* Thu Dec 06 2007 Than Ngo <than@redhat.com> 3.97.0-1
-- update to 3.97.0
-
-* Sat Dec 01 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.96.2-1
-- merge changes from Sebastian Vahl's version:
-  - update to 3.96.2, remove beta warnings
-  - BR: kde-filesystem >= 4
-  - only remove conflicts when building as kdebase4, update file list
-  - run xdg-icon-resource forceupdate for hicolor when building as kdebase
-- make this the default kdebase for F9 again
-
-* Mon Nov 19 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.96.0-4
-- don't list libkdeinit4_*.so, we remove all of them as conflicts
-
-* Mon Nov 19 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.96.0-3
-- remove new directory/files %{_kde4_datadir}/templates (conflict with KDE 3)
-
-* Mon Nov 19 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.96.0-2
-- (re)add %{_kde4_iconsdir}/oxygen/*/*/* to file list
-
-* Mon Nov 19 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.96.0-1
-- update to 3.96.0
-- drop dolphin-desktop patch, fixed upstream
-- don't list files which are now in kdebase-runtime
-- add Requires: kdebase-runtime
-
-* Thu Oct 25 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.94.0-2
-- patch dolphin.desktop to get Dolphin to start from the menu
-
-* Fri Oct 19 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.94.0-1
-- update to 3.94.0
-
-* Thu Oct 4 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.93.0-5
-- don't make this the default kdebase on F9 yet
-- drop ExcludeArch: ppc64 (#300601)
-
-* Fri Sep 21 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.93.0-4
-- ExcludeArch: ppc64 (#300601)
-- update description
-
-* Thu Sep 13 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.93.0-3
-- add missing BR alsa-lib-devel
-
-* Wed Sep 12 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.93.0-2
-- remove files which conflict with KDE 3
-- move devel symlinks to %%{_kde4_libdir}/kde4/devel/
-- Conflicts with KDE 3 versions of dolphin pre d3lphin rename
-
-* Wed Sep 12 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.93.0-1
-- update to 3.93.0
-- drop kde4home patch (no longer applied)
-- drop KDM ConsoleKit patch (KDM is now in kdebase-workspace)
-- remove kdebase-kdm Obsoletes/Provides (for the same reason)
-- remove KDM (and KDM session) setup code (for the same reason)
-- remove rss-glx conflict (Plasma is now in kdebase-workspace)
-- remove redhat-startkde patch (startkde is now in kdebase-workspace)
-- remove kde4-opt.sh (all the code in it is commented out)
-- remove kde4-xdg_menu_prefix.sh (only needed for kdebase-workspace)
-- remove bogus BRs on automake and libtool
-- remove workspace-only BRs
-- add BR qimageblitz-devel, xine-lib-devel (all), libxcb-devel (F8+)
-- remove workspace files and directories
-- handle icons (moved from kdelibs4)
-- add mkdir %%{buildroot} in %%install
-
-* Tue Aug 14 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.92.0-4
-- use macros.kde4
-- License: GPLv2
-
-* Mon Jul 30 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.92.0-3
-- bump rss-glx Conflicts because the conflict is still there in 0.8.1.p-7.fc8
-- rss-glx conflict only needed if "%%{_prefix}" == "/usr"
-- consolekit_kdm patch only needs BR dbus-devel, not ConsoleKit-devel
-
-* Mon Jul 30 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.92.0-2
-- consolekit_kdm patch (#228111, kde#147790)
-- update startkde patch
-
-* Sat Jul 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.92.0-1
-- kde-3.92 (kde-4-beta1)
-
-* Wed Jul 25 2007 Than Ngo <than@redhat.com> - 3.91.0-6
-- fix startkde
-- add env/shutdown directory
-
-* Thu Jul 19 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-5
-- kde4.desktop: fix session Name
-
-* Tue Jul 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-4
-- cleanup/fix kde4.desktop
-- kdepimlibs4->kdepimlibs
-
-* Fri Jun 29 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-3
-- fix %%_sysconfdir for %%_prefix != /usr case.
-
-* Thu Jun 28 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-2
-- updated kde4home.diff
-- CMAKE_BUILD_TYPE=RelWithDebInfo (we're already using %%optflags)
-
-* Wed Jun 27 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.91.0-1
-- kde-3.91.0
-- CMAKE_BUILD_TYPE=debug
-
-* Sat Jun 23 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.90.1-2
-- specfile cleanup (%%prefix issues mostly)
-
-* Sun May 13 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.90.1-1
-- update to 3.90.1
-- bump cmake BR to 2.4.5 as required upstream now
-- don't set execute bits by hand anymore, cmake has been fixed
-- use multilibs in /opt/kde4
-- add BR openssl-devel, NetworkManager-devel, bluez-libs-devel
-- add explicit BRs on strigi-devel, zlib-devel, bzip2-devel, libpng-devel
-  in case we want to drop the Rs on these from kdelibs4-devel
-- consistently add all BRs as -devel Rs, not just almost all, until we can
-  figure out which, if any, are really needed
-- BR libsmbclient-devel instead of samba on F>=7, EL>=6
-
-* Fri Mar 23 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.80.3-4
-- restore minimum version requirement for cmake
-- build against libxklavier on EL5
-- don't set QT4DIR and PATH anymore, qdbuscpp2xml has been fixed
-
-* Mon Mar 05 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 3.80.3-3
-- +eXecute perms for %%{_prefix}/lib/*
-
-* Fri Feb 23 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.80.3-2
-- rebuild for patched FindKDE4Internal.cmake
-
-* Wed Feb 21 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.80.3-1
-- update to 3.80.3
-- update and improve parallel-installability patch
-- drop obsolete joydevice.h patch
-- remove translations of "KDE" without the "4" from kde4.desktop
-- resync BR and -devel Requires
-- don't set LD_LIBRARY_PATH
-- set QT4DIR and PATH so CMake's direct $QT4DIR/qdbuscpp2xml calls work
-- fix missing underscore in _datadir
-- install kde4.desktop in install, not prep
-- fix invalid syntax in kde4.desktop
-
-* Wed Nov 29 2006 Chitlesh Goorah <chitlesh [AT] fedoraproject DOT org> 3.80.2-0.3.20061003svn
-- dropped -DCMAKE_SKIP_RPATH=TRUE from cmake
-- compiling with QA_RPATHS=0x0003; export QA_RPATHS
-
-* Sun Nov 26 2006 Chitlesh Goorah <chitlesh [AT] fedoraproject DOT org> 3.80.2-0.2.20061003svn
-- parallel build support
-- added -DCMAKE_SKIP_RPATH=TRUE to cmake to skip rpath
-- dropped qt4-devel >= 4.2.0, kdelibs4-devel as BR
-- spec file cleanups and added clean up in %%install
-- fixed PATH for libkdecore.so.5; cannot open shared object file;
-- added Logitech mouse support
-- added dbus-devel, hal-devel and more as BR
-- fixed broken joydevice.h - Kevin Kofler
-- added file kde4.desktop
-
-* Sun Oct 08 2006 Kevin Kofler <Kevin@tigcc.ticalc.org> 3.80.2-0.1.20061003svn
-- first Fedora RPM (parts borrowed from the OpenSUSE kdebase 4 RPM and the Fedora kdebase 3 RPM)
-- apply parallel-installability patch

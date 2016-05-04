@@ -10,3 +10,15 @@ Index: kde-settings-4.9-19/etc/kde/env/env.sh
 +   XDG_MENU_PREFIX="kde4-qubes-"
     export XDG_MENU_PREFIX
  fi
+Index: kde-settings-23-11/etc/xdg/plasma-workspace/env/env.sh
+===================================================================
+--- kde-settings-23-11.orig/etc/xdg/plasma-workspace/env/env.sh
++++ kde-settings-23-11/etc/xdg/plasma-workspace/env/env.sh
+@@ -14,6 +14,6 @@ fi
+ 
+ # XDG_MENU_PREFIX
+ if [ -z "${XDG_MENU_PREFIX}" ] ; then
+-   XDG_MENU_PREFIX="kf5-"
++   XDG_MENU_PREFIX="kf5-qubes-"
+    export XDG_MENU_PREFIX
+ fi

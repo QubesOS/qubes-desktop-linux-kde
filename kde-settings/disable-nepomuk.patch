@@ -30,18 +30,6 @@ Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/auto
 @@ -0,0 +1,2 @@
 +[Desktop Entry]
 +Hidden=true
-Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/config/nepomukserverrc
-===================================================================
---- kde-settings-4.9-19.orig/usr/share/kde-settings/kde-profile/default/share/config/nepomukserverrc
-+++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/config/nepomukserverrc
-@@ -1,5 +1,5 @@
- [Basic Settings]
--Start Nepomuk=true
-+Start Nepomuk=false
- 
- [Service-nepomukstrigiservice]
--autostart=true
-+autostart=false
 Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/kde4/services/kcm_nepomuk.desktop
 ===================================================================
 --- /dev/null
@@ -49,3 +37,13 @@ Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/kde4
 @@ -0,0 +1,2 @@
 +[Desktop Entry]
 +Hidden=true
+Index: kde-settings-23-11/usr/share/kde-settings/kde-profile/default/share/config/nepomukserverrc
+===================================================================
+--- /dev/null
++++ kde-settings-23-11/usr/share/kde-settings/kde-profile/default/share/config/nepomukserverrc
+@@ -0,0 +1,5 @@
++[Basic Settings]
++Start Nepomuk=false
++
++[Service-nepomukstrigiservice]
++autostart=false

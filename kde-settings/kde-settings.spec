@@ -51,6 +51,7 @@ Patch104: hide-knetattach.patch
 Patch105: disable-klipper.patch
 Patch106: hide-kde-help.patch
 Patch107: kdm-disable-switch-user.patch
+Patch108: hide-thunar.patch
 ###############################################################
 
 %description
@@ -123,6 +124,7 @@ Requires: pciutils
 %patch105 -p1
 %patch106 -p1
 %patch107 -p1
+%patch108 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

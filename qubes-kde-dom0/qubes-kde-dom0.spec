@@ -48,8 +48,6 @@ Requires: qubes-menus
 
 # Custom Breeze style for Qubes
 Requires: plasma-breeze-qubes
-Requires: plasma-breeze-qubes-common
-Requires: kde-style-breeze-qubes
 
 Source0: kfileplaces-bookmarks.xml
 Source1: kickoffrc

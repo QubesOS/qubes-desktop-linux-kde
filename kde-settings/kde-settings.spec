@@ -18,6 +18,7 @@ License: MIT
 Url:     http://fedorahosted.org/kde-settings
 Source0: https://fedorahosted.org/releases/k/d/kde-settings/%{name}-%{version}-%{rel}.tar.xz
 Source1: COPYING
+Source2: kickoff.tar.gz
 Source100: 10-qubes.js
 Source101: qubes-systray.js
 BuildArch: noarch
@@ -52,6 +53,7 @@ Patch105: disable-klipper.patch
 Patch106: hide-kde-help.patch
 Patch107: kdm-disable-switch-user.patch
 Patch108: hide-thunar.patch
+Patch109: kickoff-hide-computer-tab.patch
 ###############################################################
 
 %description
@@ -117,6 +119,11 @@ Requires: pciutils
 %prep
 %setup -q -n %{name}-%{version}-%{rel}
 
+tar xf %{SOURCE2}
+mkdir -p .%{_datadir}/kde-settings/kde-profile/default/share/plasma/plasmoids
+mv kickoff/package .%{_datadir}/kde-settings/kde-profile/default/share/plasma/plasmoids/org.kde.plasma.kickoff
+rm -rf kickoff
+
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
@@ -125,6 +132,7 @@ Requires: pciutils
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
+%patch109 -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.

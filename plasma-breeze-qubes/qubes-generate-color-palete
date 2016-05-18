@@ -1,0 +1,43 @@
+#!/usr/bin/python
+import os
+import xdg.BaseDirectory
+
+def get_labels():
+    labels = {}
+    try:
+        # core3
+        from qubes import Qubes
+        app = qubes.Qubes()
+        labels = app.labels
+    except ImportError:
+        # core2
+        import qubes.qubes
+        labels = qubes.qubes.QubesVmLabels
+
+    for name, label in labels.iteritems():
+        yield name, label.color
+
+def generate_palete(dir):
+    channels = 3
+    depth = 8
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    for name, color in get_labels():
+        length = channels * depth / 4
+        step = depth / 4
+        # get rid of '#' or '0x' in front
+        color = color[-length:]
+        r, g, b = (int(color[i:i + step], 0x10) for i in range(0, length, step))
+        # if required in the future, this is how to check current decoration
+        # library:
+        # kreadconfig5 --file kwinrc --group org.kde.kdecoration2 --key library
+        with open(os.path.join(dir, '%s.colors' % name), 'w') as f:
+            f.write('''[Colors:Window]
+BackgroundNormal=%d,%d,%d
+
+[WM]
+activeBackground=%d,%d,%d
+inactiveBackground=%d,%d,%d''' % (r, g, b, r, g, b, r / 2, g / 2, b / 2))
+
+if __name__ == '__main__':
+    generate_palete(os.path.join(xdg.BaseDirectory.xdg_data_home, 'qubes-kde'))

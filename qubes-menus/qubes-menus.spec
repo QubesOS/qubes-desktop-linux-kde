@@ -8,7 +8,7 @@
 
 Summary: Configuration and data files for the desktop menus
 Name: qubes-menus
-Version: 1.0
+Version: 1.1
 Release: 1
 URL: http://www.qubes-os.org
 License: GPL+

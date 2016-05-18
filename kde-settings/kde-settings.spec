@@ -12,7 +12,7 @@ Summary: Config files for kde
 Name:    kde-settings
 Epoch:   %{kde_settings_epoch}
 Version: 23
-Release: %{rel}%{?dist}
+Release: %{rel}.1%{?dist}
 
 License: MIT
 Url:     http://fedorahosted.org/kde-settings

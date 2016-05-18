@@ -12,7 +12,7 @@ Name:    kde-baseapps
 Summary: KDE Core Applications 
 Epoch:   2000
 Version: 15.12.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 License: GPLv2 and GFDL
 URL:     https://projects.kde.org/kde-baseapps

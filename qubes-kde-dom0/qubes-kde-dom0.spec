@@ -52,6 +52,7 @@ Requires: plasma-breeze-qubes
 Source0: kfileplaces-bookmarks.xml
 Source1: kickoffrc
 source2: kscreensaverrc
+Source3: plasma-org.kde.plasma.desktop-appletsrc
 
 %description
 %{summary}.
@@ -60,12 +61,15 @@ source2: kscreensaverrc
 install -D %{SOURCE0} %{buildroot}%{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
 install -D %{SOURCE1} %{buildroot}%{_sysconfdir}/skel/.kde/share/config/kickoffrc
 install -D %{SOURCE2} %{buildroot}%{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
+install -D %{SOURCE3} %{buildroot}%{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
 
 %files
 %defattr (-,root,root,-)
 %{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
 %{_sysconfdir}/skel/.kde/share/config/kickoffrc
 %{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
+%{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+
 %changelog
 * Mon May 24 2010 Joanna Rutkowska <joanna@invisiblethingslab.com>
 - spec file adapted to Qubes OS (based on Fedora spec)

@@ -92,5 +92,6 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][7][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/wallpapers/Qubes_Steel/contents/images/2048x1536.png
 height=1620
 width=2880

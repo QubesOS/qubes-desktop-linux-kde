@@ -24,6 +24,7 @@ plugin=org.kde.plasma.kickoff
 
 [Containments][1][Applets][2][Configuration][General]
 favorites=systemsettings.desktop,qubes-manager.desktop
+icon=start-here-qubes
 
 [Containments][1][Applets][2][Configuration][Shortcuts]
 global=Alt+F1

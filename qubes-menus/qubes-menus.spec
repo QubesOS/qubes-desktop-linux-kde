@@ -8,7 +8,7 @@
 
 Summary: Configuration and data files for the desktop menus
 Name: qubes-menus
-Version: 1.0
+Version: 1.1
 Release: 1
 URL: http://www.qubes-os.org
 License: GPL+
@@ -40,6 +40,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/xdg/menus
 install -m 644 menus/*.menu $RPM_BUILD_ROOT%{_sysconfdir}/xdg/menus/
 
 ln -s applications.menu $RPM_BUILD_ROOT%{_sysconfdir}/xdg/menus/kde4-qubes-applications.menu
+ln -s applications.menu $RPM_BUILD_ROOT%{_sysconfdir}/xdg/menus/kf5-qubes-applications.menu
 
 install -d $RPM_BUILD_ROOT%{_datarootdir}/desktop-directories
 install -m 644 directory-files/*.directory $RPM_BUILD_ROOT%{_datarootdir}/desktop-directories/

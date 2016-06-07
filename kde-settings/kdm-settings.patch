@@ -1,8 +1,8 @@
-Index: kde-settings-4.9-19/etc/kde/kdm/kdmrc
+Index: kde-settings-23-11/etc/kde/kdm/kdmrc
 ===================================================================
---- kde-settings-4.9-19.orig/etc/kde/kdm/kdmrc
-+++ kde-settings-4.9-19/etc/kde/kdm/kdmrc
-@@ -294,7 +294,7 @@ GUIStyle=Plastique
+--- kde-settings-23-11.orig/etc/kde/kdm/kdmrc
++++ kde-settings-23-11/etc/kde/kdm/kdmrc
+@@ -322,7 +322,7 @@ GUIStyle=Plastique
  LogoArea=Logo
  # The image to show when LogoArea=Logo.
  # Default is ""
@@ -11,21 +11,21 @@ Index: kde-settings-4.9-19/etc/kde/kdm/kdmrc
  # The relative coordinates (X,Y in percent) of the center of the greeter.
  # Default is "50,50"
  #GreeterPos=30,40
-@@ -313,7 +313,7 @@ LogoPixmap=/usr/share/icons/hicolor/96x9
+@@ -341,7 +341,7 @@ LogoPixmap=/usr/share/icons/hicolor/96x9
  # - %m -> the machine (hardware) type
  # - %% -> a single %
  # Default is "Welcome to %s at %n"
--GreetString=Fedora 18 (Spherical Cow)
+-GreetString=Fedora 22 (Twenty Two)
 +GreetString=Qubes OS
- # The font for the greeter headline.
- # Default is "charter,24,bold"
- GreetFont=Sans,16,-1,5,75,0,0,0,0,0
-@@ -442,7 +442,7 @@ ForgingSeed=1108476160
- UseTheme=true
+ # Whether the fonts used in the greeter should be antialiased.
+ # Default is false
+ AntiAliasing=true
+@@ -477,7 +477,7 @@ UseTheme=true
  # The theme to use for the greeter. Can point to either a directory or an XML
- # file. Default is "/usr/share/kde4/apps/kdm/themes/circles"
--Theme=/usr/share/kde4/apps/kdm/themes/SphericalCow
+ # file.
+ # Default is ""
+-Theme=/usr/share/kde4/apps/kdm/themes/F23
 +Theme=/usr/share/kde4/apps/kdm/themes/oxygen
- # Set the widget color scheme 
- #ColorScheme=ObsidianCoast
- 
+ # Enable the Alt-Ctrl-D shortcut to toggle greeter theme debugging.
+ # Default is false
+ #AllowThemeDebug=true

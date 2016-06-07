@@ -42,9 +42,11 @@ ifdef URL
 	SRC_FILE := $(notdir $(URL))
 endif
 endif
+ifndef DO_NOT_USE_DISTFILES_MIRROR
 ifdef DISTFILES_MIRROR
 ifdef URL
 URL := $(DISTFILES_MIRROR)$(notdir $(URL))
+endif
 endif
 endif
 
@@ -52,7 +54,7 @@ get-sources: $(SRC_FILE)
 
 $(SRC_FILE):
 ifneq ($(SRC_FILE), None)
-	@wget -q $(URL)
+	@wget --progress=dot:mega $(URL)
 endif
 
 .PHONY: verify-sources
@@ -75,7 +77,7 @@ RPM := rpmbuild
 
 RPM_WITH_DIRS = $(RPM) $(RPM_DEFINES)
 
-rpms: get-sources $(SPECFILE)
+rpms: get-sources verify-sources $(SPECFILE)
 	$(RPM_WITH_DIRS) -bb $(SPECFILE)
 
 rpms-nobuild:
@@ -84,10 +86,10 @@ rpms-nobuild:
 rpms-just-build: 
 	$(RPM_WITH_DIRS) --short-circuit -bc $(SPECFILE)
 
-prep: get-sources $(SPECFILE)
+prep: get-sources verify-sources $(SPECFILE)
 	$(RPM_WITH_DIRS) -bp $(SPECFILE)
 
-srpm: get-sources $(SPECFILE)
+srpm: get-sources verify-sources $(SPECFILE)
 	$(RPM_WITH_DIRS) -bs $(SPECFILE)
 
 verrel:

@@ -2,13 +2,14 @@
 
 %if 0%{?qubes_builder}
 %define _sourcedir %(pwd)/qubes-kde-dom0
+%define qubes_kde_dom0_version %(cat version)
 %endif
 %{!?version: %define version %(cat version)}
 
 
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
-Version: %{version}
+Version: %{qubes_kde_dom0_version}
 Release: 1%{?dist}
 
 License: GPL2
@@ -20,8 +21,8 @@ Requires: kde-filesystem
 Requires: kde-settings
 Requires: kde-settings-kdm
 Requires: kdelibs >= %{version}
-Requires: kde-workspace
-Requires: kde-workspace-libs
+Requires: plasma-workspace
+Requires: plasma-workspace-libs
 #Requires: kde-workspace-wallpapers
 Requires: kde-runtime >= %{version}
 Requires: kde-runtime-libs >= %{version}
@@ -45,11 +46,13 @@ Requires: dejavu-sans-fonts
 # Qubes-customized menus
 Requires: qubes-menus
 
-Requires: kde-style-plastik-for-qubes
+# Custom Breeze style for Qubes
+Requires: plasma-breeze-qubes
 
 Source0: kfileplaces-bookmarks.xml
 Source1: kickoffrc
 source2: kscreensaverrc
+Source3: plasma-org.kde.plasma.desktop-appletsrc
 
 %description
 %{summary}.
@@ -58,12 +61,15 @@ source2: kscreensaverrc
 install -D %{SOURCE0} %{buildroot}%{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
 install -D %{SOURCE1} %{buildroot}%{_sysconfdir}/skel/.kde/share/config/kickoffrc
 install -D %{SOURCE2} %{buildroot}%{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
+install -D %{SOURCE3} %{buildroot}%{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
 
 %files
 %defattr (-,root,root,-)
 %{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
 %{_sysconfdir}/skel/.kde/share/config/kickoffrc
 %{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
+%{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+
 %changelog
 * Mon May 24 2010 Joanna Rutkowska <joanna@invisiblethingslab.com>
 - spec file adapted to Qubes OS (based on Fedora spec)

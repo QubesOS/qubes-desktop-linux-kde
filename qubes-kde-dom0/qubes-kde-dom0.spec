@@ -10,7 +10,7 @@
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
 Version: %{qubes_kde_dom0_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 License: GPL2
 URL: http://qubes-os.org

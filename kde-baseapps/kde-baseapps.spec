@@ -63,7 +63,7 @@ Provides:  kdebase4 = %{version}-%{release}
 
 BuildRequires: gcc-c++
 BuildRequires: desktop-file-utils
-%if 0%{fedora} < 22
+%if 0%{?fedora} < 22
 BuildRequires: baloo-devel >= 4.14
 BuildRequires: baloo-widgets-devel >= 4.14
 BuildRequires: kactivities-devel

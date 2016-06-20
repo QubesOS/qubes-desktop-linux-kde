@@ -18,6 +18,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       plasma-breeze
 Requires:       pyxdg
 
+Obsoletes: kde-style-plastik-for-qubes
+
 %description
 %{summary}.
 

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Generate KDE color palete for Qubes windows
-Exec=qubes-generate-color-palete
+Exec=qubes-generate-color-palette
 StartupNotify=false
 NoDisplay=true
 OnlyShowIn=KDE

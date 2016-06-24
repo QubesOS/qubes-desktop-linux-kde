@@ -4,7 +4,7 @@
 %endif
 
 Name:    plasma-breeze-qubes
-Version: 5.5.5
+Version: 5.5.6
 Release: 1%{?dist}
 Summary: Qubes colorful frames for Breeze plasma theme
 

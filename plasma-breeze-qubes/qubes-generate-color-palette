@@ -20,6 +20,14 @@ def get_labels():
 def generate_palete(dir):
     channels = 3
     depth = 8
+    active_foreground_color_default = [255, 255, 255]
+    active_foreground_colors = {
+		# Foreground colors overrides in order to make higher contrast.
+		# Sorted by subjective contrast gain desc.
+		'yellow': [0, 0, 0],
+		'green': [0, 0, 0],
+		'orange': [0, 0, 0],
+    }
     if not os.path.exists(dir):
         os.makedirs(dir)
     for name, color in get_labels():
@@ -31,13 +39,17 @@ def generate_palete(dir):
         # if required in the future, this is how to check current decoration
         # library:
         # kreadconfig5 --file kwinrc --group org.kde.kdecoration2 --key library
+        active_foreground = active_foreground_colors.get(name, active_foreground_color_default)
         with open(os.path.join(dir, '%s.colors' % name), 'w') as f:
             f.write('''[Colors:Window]
 BackgroundNormal=%d,%d,%d
 
 [WM]
 activeBackground=%d,%d,%d
-inactiveBackground=%d,%d,%d''' % (r, g, b, r, g, b, r / 2, g / 2, b / 2))
+inactiveBackground=%d,%d,%d
+activeForeground=%d,%d,%d
+
+''' % (r, g, b, r, g, b, r / 2, g / 2, b / 2, active_foreground[0], active_foreground[1], active_foreground[2]))
 
 if __name__ == '__main__':
     generate_palete(os.path.join(xdg.BaseDirectory.xdg_data_home, 'qubes-kde'))

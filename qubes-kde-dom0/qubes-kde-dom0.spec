@@ -17,6 +17,7 @@ URL: http://qubes-os.org
 
 BuildArch: noarch
 
+Requires: qubes-desktop-linux-common
 Requires: kde-filesystem
 Requires: kde-settings
 Requires: kde-settings-kdm

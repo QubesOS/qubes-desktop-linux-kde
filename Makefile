@@ -1,6 +1,6 @@
 default: help
 
-SUBDIRS:= kde-baseapps kde-settings qubes-kde-dom0 qubes-menus
+SUBDIRS:= kde-baseapps kde-settings qubes-kde-dom0
 
 .PHONY: verify-sources get-sources clean-sources clean
 

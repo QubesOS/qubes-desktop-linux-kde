@@ -5,17 +5,21 @@
 # trim changelog included in binary rpms
 %global _changelog_trimtime %(date +%s -d "1 year ago")
 
+%if 0%{?fedora} < 22
+%define folderview 1
+%endif
+
 # enable tests
 %global tests 1
 
 Name:    kde-baseapps
 Summary: KDE Core Applications 
 Epoch:   2000
-Version: 15.12.3
-Release: 2%{?dist}
+Version: 16.08.3
+Release: 1%{?dist}
 
 License: GPLv2 and GFDL
-URL:     https://projects.kde.org/kde-baseapps
+URL:     https://quickgit.kde.org/?p=%{name}.git
 %global revision %(echo %{version} | cut -d. -f3)
 %if %{revision} >= 50
 %global stable unstable
@@ -46,7 +50,7 @@ Requires: accountsservice
 %endif
 
 ## Qubes patches
-Patch100: kde-baseapps-4.12-qubes.patch
+Patch100: kde-baseapps-16.08.3-qubes.patch
 
 %ifnarch s390 s390x
 Requires: eject
@@ -61,7 +65,6 @@ Provides:  kdebase = 6:%{version}-%{release}
 Obsoletes: kdebase4 < %{version}-%{release}
 Provides:  kdebase4 = %{version}-%{release}
 
-BuildRequires: gcc-c++
 BuildRequires: desktop-file-utils
 %if 0%{?fedora} < 22
 BuildRequires: baloo-devel >= 4.14
@@ -83,11 +86,14 @@ BuildRequires: pkgconfig(zlib)
 
 %if 0%{?tests}
 %global _kde4_build_tests -DKDE4_BUILD_TESTS:BOOL=ON
-# %%%check
+# %%check
 BuildRequires: dbus-x11 xorg-x11-server-Xvfb
 %endif
 
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%if 0%{?folderview}
+Requires: kde-plasma-folderview = 6:%{version}-%{release}
+%endif
 Requires: kdepasswd = %{epoch}:%{version}-%{release}
 Requires: kdialog = %{epoch}:%{version}-%{release}
 
@@ -108,7 +114,9 @@ konqueror : Web browser, file manager and document viewer
 %package common
 Summary: Common files for %{name}
 Conflicts: kde-baseapps < 4.12.0-2
+%if ! 0%{?folderview}
 Obsoletes: kde-plasma-folderview < 6:%{version}-%{release}
+%endif
 BuildArch: noarch
 %description common
 %{summary}
@@ -152,7 +160,7 @@ KDialog can be used to show nice dialog boxes from shell scripts.
 %package -n libkonq
 Summary: Libkonq shared resources
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
-Requires: kdelibs4%{?_isa}%{?_kde4_version: >= %{_kde4_version}}
+%{?kdelibs4_requires}
 %description -n libkonq
 %{summary}.
 
@@ -164,7 +172,9 @@ Requires: kdelibs4%{?_isa}%{?_kde4_version: >= %{_kde4_version}}
 %patch3 -p2 -b .kde#228593
 %patch5 -p1 -b .konq_mimetype
 
+%if ! 0%{?folderview}
 sed -i -e 's|^add_subdirectory(folderview)|#add_subdirectory(folderview)|g' plasma/applets/CMakeLists.txt
+%endif
 
 %patch100 -p1 -b .qubes
 
@@ -311,6 +321,48 @@ fi
 %{_datadir}/dbus-1/interfaces/org.kde.kdialog.ProgressDialog.xml
 
 %changelog
+* Wed Nov 30 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.08.3-1
+- 16.08.3
+
+* Thu Oct 13 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.08.2-1
+- 16.08.2
+
+* Tue Sep 06 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.08.1-1
+- 16.08.1
+
+* Tue Aug 16 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.08.0-3
+- rebuild
+
+* Tue Aug 16 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.08.0-2
+- rebuild
+
+* Fri Aug 12 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.08.0-1
+- 16.08.0
+
+* Sat Aug 06 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.07.90-1
+- 16.07.90
+
+* Fri Jul 29 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.07.80-1
+- 16.07.80
+
+* Fri Jul 08 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.04.3-1
+- 16.04.3
+
+* Sun Jun 12 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.04.2-1
+- 16.04.2
+
+* Sun May 08 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.04.1-1
+- 16.04.1
+
+* Wed Apr 20 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.04.0-3
+- rebuild (qt)
+
+* Mon Apr 18 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.04.0-2
+- rebuild (qt)
+
+* Fri Apr 15 2016 Rex Dieter <rdieter@fedoraproject.org> - 16.04.0-1
+- 16.04.0
+
 * Sun Mar 13 2016 Rex Dieter <rdieter@fedoraproject.org> - 15.12.3-1
 - 15.12.3
 

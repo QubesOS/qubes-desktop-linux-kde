@@ -4,7 +4,7 @@ SPECFILE = $(firstword $(wildcard *.spec))
 MAKEFILE_COMMON := ../Makefile.common
 
 verify-sources:
-	@sha512sum --quiet -c sources-23
+	@sha512sum --quiet -c sources-25
 
 export NAME SPECFILE
 

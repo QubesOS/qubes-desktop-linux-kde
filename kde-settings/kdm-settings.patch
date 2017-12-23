@@ -15,7 +15,7 @@ Index: kde-settings-23-11/etc/kde/kdm/kdmrc
  # - %m -> the machine (hardware) type
  # - %% -> a single %
  # Default is "Welcome to %s at %n"
--GreetString=Fedora 22 (Twenty Two)
+-GreetString=Fedora 25 (Twenty Five)
 +GreetString=Qubes OS
  # Whether the fonts used in the greeter should be antialiased.
  # Default is false

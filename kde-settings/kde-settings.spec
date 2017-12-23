@@ -5,18 +5,17 @@
 %define kde_settings_epoch 0
 %endif
 
-%global rel 11
-%global system_kde_theme_ver 23.0
+%global rel 6
 
 Summary: Config files for kde
 Name:    kde-settings
 Epoch:   %{kde_settings_epoch}
-Version: 23
-Release: %{rel}.2%{?dist}
+Version: 25
+Release: %{rel}%{?dist}.1
 
 License: MIT
-Url:     http://fedorahosted.org/kde-settings
-Source0: https://fedorahosted.org/releases/k/d/kde-settings/%{name}-%{version}-%{rel}.tar.xz
+Url:     https://github.com/FedoraKDE/kde-settings
+Source0: https://github.com/FedoraKDE/kde-settings/archive/v%{version}-%{rel}.tar.gz
 Source1: COPYING
 Source2: kickoff.tar.gz
 Source100: 10-qubes.js
@@ -29,16 +28,19 @@ BuildRequires: systemd
 # when kdebugrc was moved here
 Conflicts: kf5-kdelibs4support < 5.7.0-3
 
+Obsoletes: kde-settings-ksplash < 24-2
+Obsoletes: kde-settings-minimal < 24-3
+
 Requires: kde-filesystem
 # /etc/pam.d/ ownership
 Requires: pam
 Requires: xdg-user-dirs
 ## add breeze deps here? probably, need more too -- rex
 Requires: breeze-icon-theme
-%if 0%{?fedora}
+#if 0%{?fedora}
 # for 11-fedora-kde-policy.rules
-Requires: polkit-js-engine
-%endif
+#Requires: polkit-js-engine
+#endif
 Requires: qubes-artwork
 
 Requires(post): coreutils sed
@@ -67,34 +69,16 @@ Requires: xorg-x11-xinit
 %description minimal
 %{summary}.
 
-%package kdm
-Summary: Configuration files for kdm
-# MinShowUID=-1 is only supported from 4.7.1-2 on
-Requires: kdm >= 4.7.1-2
-Requires: system-kdm-theme >= %{system_kde_theme_ver}
-
-Requires: xorg-x11-xinit
-Requires(pre): coreutils
-Requires(post): coreutils grep sed
-Requires(post): kde4-macros(api) = %{_kde4_macros_api}
-%{?systemd_requires}
-%description kdm
-%{summary}.
-
-%package ksplash
-Summary: Configuration files for ksplash
-Requires: %{name} = %{epoch}:%{version}-%{release}
-Requires: system-ksplash-theme >= %{system_kde_theme_ver}
-%description ksplash 
-%{summary}.
-
 %package plasma
 Summary: Configuration files for plasma 
 Requires: %{name} = %{epoch}:%{version}-%{release}
-Requires: system-plasma-theme >= %{system_kde_theme_ver}
+Requires: f25-backgrounds-kde
+Requires: system-logos
 %description plasma 
 %{summary}.
 
+# FIXME/TODO: can probably consider dropping this subpkg now that we
+# have good comps and soft dependencies support -- rex
 %package pulseaudio
 Summary: Enable pulseaudio support in KDE
 # nothing here to license
@@ -111,28 +95,23 @@ Requires: alsa-plugins-pulseaudio
 %package -n qt-settings
 Summary: Configuration files for Qt 
 # qt-graphicssystem.* scripts use lspci
-Requires: pciutils
+#Requires: pciutils
 %description -n qt-settings
 %{summary}.
 
 
 %prep
-%setup -q -n %{name}-%{version}-%{rel}
+%autosetup -N -n %{name}-%{version}-%{rel}
+
+# omit crud
+rm -fv Makefile
 
 tar xf %{SOURCE2}
 mkdir -p .%{_datadir}/kde-settings/kde-profile/default/share/plasma/plasmoids
 mv kickoff/package .%{_datadir}/kde-settings/kde-profile/default/share/plasma/plasmoids/org.kde.plasma.kickoff
 rm -rf kickoff
 
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%patch104 -p1
-%patch105 -p1
-%patch106 -p1
-%patch107 -p1
-%patch108 -p1
-%patch109 -p1
+%autopatch -p1
 
 %build
 # Intentionally left blank.  Nothing to see here.
@@ -145,33 +124,43 @@ tar cpf - . | tar --directory %{buildroot} -xvpf -
 
 cp -p %{SOURCE1} .
 
-# kdebase/kdm symlink
-rm -rf   %{buildroot}%{_datadir}/config/kdm
-ln -sf ../../../etc/kde/kdm %{buildroot}%{_datadir}/config/kdm
+# omit kdm stuff
+rm -rfv %{buildroot}%{_sysconfdir}/{kde/kdm,logrotate.d/kdm,pam.d/kdm*}
+rm -fv %{buildroot}%{_localstatedir}/lib/kdm/backgroundrc
+rm -fv %{buildroot}%{_tmpfilesdir}/kdm.conf
+rm -fv %{buildroot}%{_unitdir}/kdm.service
 
-# own these
-mkdir -p %{buildroot}%{_localstatedir}/lib/kdm
-mkdir -p %{buildroot}%{_localstatedir}/run/{kdm,xdmctl}
-
-# unpackaged files (at least until fixed upstream)
-rm -fv %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/{ksplashrc,plasmarc}
+## unpackaged files
+# formerly known as -minimal
+rm -fv %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/20-kdedirs-minimal.sh
 rm -fv %{buildroot}%{_sysconfdir}/profile.d/qt-graphicssystem.*
-rm -fv %{buildroot}%{_sysconfdir}/xdg/QtProject/qtlogging.ini
+
+# FIXME/NEEDSWORK, still (mostly?) kde4
+# rhel stuff
+%if 0%{?rhel}
+rm -rf %{buildroot}%{_sysconfdir}/kde/env/fedora-bookmarks.sh \
+       %{buildroot}%{_prefix}/lib/rpm \
+       %{buildroot}%{_datadir}/polkit-1/
+echo "[Theme]" > %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
+echo "name=RHEL7" >> %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
+echo "[KSplash]" > %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
+echo "Theme=RHEL7" >> %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
+perl -pi -e "s,^Theme=.*,Theme=/usr/share/kde4/apps/kdm/themes/RHEL7," %{buildroot}%{_sysconfdir}/kde/kdm/kdmrc
+perl -pi -e "s,^HomeURL=.*,HomeURL=file:///usr/share/doc/HTML/index.html," %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/konquerorrc
+perl -pi -e "s,^View0_URL=.*,View0_URL=file:///usr/share/doc/HTML/index.html," %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/apps/konqueror/profiles/webbrowsing
+%endif
 
 # Remove Fedora branding
-rm -f %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/00-start-here-kde-fedora-2.js
-rm -f %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/updates/00-start-here-kde-fedora-2.js
+rm -f %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/00-start-here-2.js
 rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/plasmarc
 rm -f %{buildroot}%{_datadir}/kde-settings/kde-profile/default/share/config/ksplashrc
 
 # Qubes defaults
 install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/
 install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/
-install -m 644 %{SOURCE100} %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/updates/
-install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/updates/
 
 %files 
-%doc COPYING
+%license COPYING
 %config(noreplace) %{_sysconfdir}/profile.d/kde.*
 %{_sysconfdir}/kde/env/env.sh
 %{_sysconfdir}/kde/env/gpg-agent-startup.sh
@@ -193,79 +182,95 @@ install -m 644 %{SOURCE101} %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma
 # drop noreplace, so we can be sure to get the new kiosk bits
 %config %{_sysconfdir}/kderc
 %config %{_sysconfdir}/kde4rc
+%dir %{_datadir}/kde-settings/
+%dir %{_datadir}/kde-settings/kde-profile/
 %{_datadir}/applications/kde-mimeapps.list
-
-%files minimal
-%{_datadir}/kde-settings/kde-profile/minimal/
-%{_sysconfdir}/X11/xinit/xinitrc.d/20-kdedirs-minimal.sh
-
-%post kdm
-%{?systemd_post:%systemd_post kdm.service}
-(grep '^UserAuthDir=/var/run/kdm$' %{_sysconfdir}/kde/kdm/kdmrc > /dev/null && \
- sed -i.rpmsave -e 's|^UserAuthDir=/var/run/kdm$|#UserAuthDir=/tmp|' \
- %{_sysconfdir}/kde/kdm/kdmrc
-) ||:
-
-%preun kdm
-%{?systemd_preun:%systemd_preun kdm.service}
-
-%postun kdm
-%{?systemd_postun}
-
-%files kdm
-%doc COPYING
-%config(noreplace) /etc/pam.d/kdm*
-# compat symlink
-%{_datadir}/config/kdm
-%dir %{_sysconfdir}/kde/kdm
-%config(noreplace) %{_sysconfdir}/kde/kdm/kdmrc
-%dir %{_localstatedir}/lib/kdm
-%config(noreplace) %{_localstatedir}/lib/kdm/backgroundrc
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_sysconfdir}/kde/kdm/README*
-%config(noreplace) %{_sysconfdir}/kde/kdm/Xaccess
-%config(noreplace) %{_sysconfdir}/kde/kdm/Xresources
-%config(noreplace) %{_sysconfdir}/kde/kdm/Xsession
-%config(noreplace) %{_sysconfdir}/kde/kdm/Xsetup
-%config(noreplace) %{_sysconfdir}/kde/kdm/Xwilling
-# own logrotate.d/ avoiding hard dep on logrotate
-%dir %{_sysconfdir}/logrotate.d
-%config(noreplace) %{_sysconfdir}/logrotate.d/kdm
-%{_tmpfilesdir}/kdm.conf
-%attr(0711,root,root) %dir %{_localstatedir}/run/kdm
-%attr(0711,root,root) %dir %{_localstatedir}/run/xdmctl
-%{_unitdir}/kdm.service
-
-%files ksplash
-## empty, FIXME
+%if 0%{?rhel}
+%exclude %{_datadir}/kde-settings/kde-profile/default/share/apps/plasma-desktop/init/00-defaultLayout.js
+%endif
 
 %files plasma
 %{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/10-qubes.js
 %{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/qubes-systray.js
-%{_datadir}/plasma/shells/org.kde.plasma.desktop/updates/10-qubes.js
-%{_datadir}/plasma/shells/org.kde.plasma.desktop/updates/qubes-systray.js
 %{_sysconfdir}/xdg/plasma-workspace/env/env.sh
 %{_sysconfdir}/xdg/plasma-workspace/env/gtk2_rc_files.sh
 %{_sysconfdir}/xdg/plasma-workspace/env/gtk3_scrolling.sh
 %{_sysconfdir}/xdg/plasma-workspace/shutdown/kuiserver5.sh
+%{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kicker.js
+%{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js
+%{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js
 
 %files pulseaudio
 # nothing, this is a metapackage
 
 %files -n qt-settings
-%doc COPYING
-#config(noreplace) %{_sysconfdir}/xdg/QtProject/qtlogging.ini
+%license COPYING
 %config(noreplace) %{_sysconfdir}/Trolltech.conf
 #config(noreplace) %{_sysconfdir}/profile.d/qt-graphicssystem.*
 
 
 %changelog
-* Fri Mar 25 2016 Rex Dieter <rdieter@fedoraproject.org> 
-- 23-11.1
+* Fri Apr 21 2017 Rex Dieter <rdieter@fedoraproject.org> - 25-6.1
+- -plasma: fix backgrounds dep
+
+* Thu Apr 20 2017 Rex Dieter <rdieter@fedoraproject.org> - 25-6
+- baloofilerc: drop explicit folders= key (use default set in kf5-baloo)
+
+* Thu Mar 30 2017 Rex Dieter <rdieter@fedoraproject.org> - 25-5.1
+- drop Requires: polkit-js-engine
+
+* Mon Mar 27 2017 Adam Williamson <awilliam@redhat.com> - 25-5
+- Patch another thing needed to get correct F26 theme
+
+* Mon Mar 27 2017 Adam Williamson <awilliam@redhat.com> - 25-4
+- Bump to F26 backgrounds
+
+* Wed Mar 15 2017 Rex Dieter <rdieter@fedoraproject.org> - 25-3
+- mimeapps: prefer plasma-discover (over apper)
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 25-2.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Sun Oct 09 2016 Rex Dieter <rdieter@fedoraproject.org> - 25-2
+- init kde-settings-25
+
+* Wed Jul 06 2016 Rex Dieter <rdieter@fedoraproject.org> - 24-7
+- better start-here scriplet
+
+* Tue Apr 19 2016 Rex Dieter <rdieter@fedoraproject.org> - 24-6
+- drop 00-start-here-kde-fedora-2.js
+
+* Wed Mar 30 2016 Rex Dieter <rdieter@fedoraproject.org> - 24-5
+- plasmarc: Theme=F24
+- drop remnants of -ksplash subpkg
+
+* Tue Mar 29 2016 Rex Dieter <rdieter@fedoraproject.org> - 24-4
+- drop -kdm (superceded by kdm-settings subpkg of kde-workspace)
+- ksmserverrc: disable session management
+
+* Tue Mar 29 2016 Rex Dieter <rdieter@fedoraproject.org> 24-3.2
+- -kdm: Requires: s/redhat-logos/system-logos/
+
+* Thu Mar 24 2016 Rex Dieter <rdieter@fedoraproject.org> 24-3.1
 - omit qt-graphicssystem.* shell hacks (#1306524)
 - drop /etc/xdg/QtProject/qtlogging.ini (#1227295)
 
-* Wed Feb 10 2016 Rex Dieter <rdieter@fedoraproject.org> 23-11
-- merge kde-mimeapps.list fixes/improvements from master/ (#1299586)
+* Mon Mar 21 2016 Rex Dieter <rdieter@fedoraproject.org> - 24-3
+- drop -minimal
+- drop deprecated kde4 bits
+- generic theming (for now)
+
+* Sat Mar 12 2016 Rex Dieter <rdieter@fedoraproject.org> 24-1.3
+- (re)enable -kdm (dropping needswork)
+
+* Fri Mar 11 2016 Rex Dieter <rdieter@fedoraproject.org> 24-1.2
+- drop -kdm, -ksplash
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 24-1.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Sat Jan 30 2016 Rex Dieter <rdieter@fedoraproject.org> 24-1
+- init v24, kde-mimeapps.list: adjust to kf5 versions of ark, dragon, gwenview
 
 * Thu Jan 07 2016 Rex Dieter <rdieter@fedoraproject.org> 23-10
 - revert prior commit, use prefix/plasma/shells/<package>/contents/updates instead

@@ -6,15 +6,15 @@ def get_labels():
     labels = {}
     try:
         # core3
-        from qubes import Qubes
-        app = qubes.Qubes()
+        import qubesadmin
+        app = qubesadmin.Qubes()
         labels = app.labels
     except ImportError:
         # core2
         import qubes.qubes
         labels = qubes.qubes.QubesVmLabels
 
-    for name, label in labels.iteritems():
+    for name, label in labels.items():
         yield name, label.color
 
 def generate_palete(dir):

@@ -56,6 +56,7 @@ Patch106: hide-kde-help.patch
 Patch107: kdm-disable-switch-user.patch
 Patch108: hide-thunar.patch
 Patch109: kickoff-hide-computer-tab.patch
+Patch110: start-here-icon.patch
 ###############################################################
 
 %description

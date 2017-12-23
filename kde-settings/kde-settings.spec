@@ -11,7 +11,7 @@ Summary: Config files for kde
 Name:    kde-settings
 Epoch:   %{kde_settings_epoch}
 Version: 25
-Release: %{rel}%{?dist}.1
+Release: %{rel}%{?dist}.2
 
 License: MIT
 Url:     https://github.com/FedoraKDE/kde-settings

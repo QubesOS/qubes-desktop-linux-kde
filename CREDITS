@@ -1,9 +1,0 @@
-The Fedora Project
-===================
-Most of the SPEC files used here are based on Fedora 12 original SPEC files.
-They have been modified (usually just simplified) to better fit Qubes Dom0
-environment. The Makefile.common is also roughly based on Fedora's
-Makefile.common, but greatly simplified for our needs.
-
-
-

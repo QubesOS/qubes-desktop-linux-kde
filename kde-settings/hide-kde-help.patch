@@ -1,9 +1,0 @@
-Index: kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/Help.desktop
-===================================================================
---- /dev/null
-+++ kde-settings-4.9-19/usr/share/kde-settings/kde-profile/default/share/applications/kde4/Help.desktop
-@@ -0,0 +1,4 @@
-+[Desktop Entry]
-+NoDisplay=true
-+Name=Removed entry
-+Exec=/bin/true

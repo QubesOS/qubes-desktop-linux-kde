@@ -1,15 +1,8 @@
 # This is a meta package that makes installing all KDE components easy
 
-%if 0%{?qubes_builder}
-%define _sourcedir %(pwd)/qubes-kde-dom0
-%define qubes_kde_dom0_version %(cat version)
-%endif
-%{!?version: %define version %(cat version)}
-
-
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
-Version: %{qubes_kde_dom0_version}
+Version: 5.12.3
 Release: 3%{?dist}
 
 License: GPL2

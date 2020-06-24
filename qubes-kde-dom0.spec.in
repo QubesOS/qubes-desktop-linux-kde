@@ -1,5 +1,3 @@
-# This is a meta package that makes installing all KDE components easy
-
 Name:    qubes-kde-dom0
 Summary: Metapackage for installing all KDE components needed for Qubes Dom0
 Version: @VERSION@
@@ -11,31 +9,31 @@ URL: http://qubes-os.org
 BuildArch: noarch
 
 Requires: qubes-desktop-linux-common
+Requires: qubes-artwork
 Requires: kde-filesystem
+Requires: kde-runtime
+Requires: kde-runtime-flags
+Requires: kde-runtime-libs
 Requires: kde-settings
-Requires: kde-settings-kdm
-Requires: kdelibs >= %{version}
-Requires: plasma-workspace
-Requires: plasma-workspace-libs
-#Requires: kde-workspace-wallpapers
-Requires: kde-runtime >= %{version}
-Requires: kde-runtime-libs >= %{version}
-Requires: kde-runtime-flags >= %{version}
-Requires: kde-baseapps >= %{version}
-Requires: kdm
+Requires: kdelibs
+Requires: kscreen
 Requires: ksysguardd
 Requires: oxygen-cursor-themes
 Requires: oxygen-icon-theme
+Requires: plasma-workspace
+Requires: plasma-workspace-libs
+Requires: sddm
+Requires: sddm-breeze
 
-# other 3rd party packages that are useful in Dom0...
+# Drop previous Qubes package
+Requires: kde-baseapps > 16.08.3
+Conflicts: kde-baseapps = 2000:16.08.3
+
+# other 3rd party packages that are useful in Dom0
 
 # The konsole really looks awful without those fonts:
 Requires: dejavu-sans-mono-fonts
 Requires: dejavu-sans-fonts
-
-# This is for people who don't use NetVM (i.e. don't have VT-d hardware)
-# This should be left to the user IMO
-#Requires: knetworkmanager
 
 # Qubes-customized menus
 Requires: qubes-menus
@@ -44,22 +42,27 @@ Requires: qubes-menus
 Requires: plasma-breeze-qubes
 
 Source0: %{name}-%{version}.tar.gz
-Source1: kfileplaces-bookmarks.xml
-Source2: kickoffrc
-source3: kscreensaverrc
-Source4: plasma-org.kde.plasma.desktop-appletsrc
 
 %description
 %{summary}.
+
+%package -n plasma-breeze-qubes
+Summary: Qubes colorful frames for Breeze plasma theme
+Requires: plasma-breeze
+%if 0%{?fedora} >=32 || 0%{?rhel} >= 8
+Requires: python3-pyxdg
+%else
+Requires: pyxdg
+%endif
+
+%description -n plasma-breeze-qubes
+Qubes colorful frames for Breeze plasma theme.
 
 %prep
 %setup
 
 %install
-install -D %{SOURCE1} %{buildroot}%{_sysconfdir}/skel/.kde/share/apps/kfileplaces/bookmarks.xml
-install -D %{SOURCE2} %{buildroot}%{_sysconfdir}/skel/.kde/share/config/kickoffrc
-install -D %{SOURCE3} %{buildroot}%{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
-install -D %{SOURCE4} %{buildroot}%{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+%make_install
 
 %files
 %defattr (-,root,root,-)
@@ -67,6 +70,52 @@ install -D %{SOURCE4} %{buildroot}%{_sysconfdir}/skel/.config/plasma-org.kde.pla
 %{_sysconfdir}/skel/.kde/share/config/kickoffrc
 %{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
 %{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+%{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kicker.js.qubes
+%{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes
+%{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
+%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/10-qubes.js
+%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/qubes-systray.js
+%{_datadir}/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRepresentation.qml.qubes
+%{_datadir}/kde-settings/kde-profile/default/share/applications/Thunar.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/Help.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/knetattach.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/nepomukbackup.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/nepomukcontroller.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/org.kde.klipper.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/org.kde.knetattach.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/applications/thunar-settings.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/autostart/nepomukcontroller.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/autostart/org.kde.klipper.desktop
+%{_datadir}/kde-settings/kde-profile/default/share/config/klipperrc
+%{_datadir}/kde-settings/kde-profile/default/share/config/nepomukserverrc
+%{_datadir}/kde-settings/kde-profile/default/share/kde4/services/kcm_nepomuk.desktop
+
+%files -n plasma-breeze-qubes
+/usr/bin/qubes-generate-color-palette
+%config(noreplace) /etc/xdg/autostart/qubes-generate-color-palette.desktop
+
+%define settings_replace() \
+qubesfile="%{1}" \
+origfile=${qubesfile%.qubes} \
+backupfile=${origfile}.kde \
+if [ -r "$origfile" -a ! -r "$backupfile" ]; then \
+	mv -f "$origfile" "$backupfile" \
+fi \
+cp -f "$qubesfile" "$origfile" \
+%{nil}
+
+%triggerin -- kde-settings
+# Qubes menus prefix
+sed -i 's|XDG_MENU_PREFIX="kde4-"|XDG_MENU_PREFIX="kde4-qubes-"|g' /etc/kde/env/env.sh
+sed -i 's|XDG_MENU_PREFIX="kf5-"|XDG_MENU_PREFIX="kf5-qubes-"|g' /etc/xdg/plasma-workspace/env/env.sh
+
+%settings_replace /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kicker.js.qubes
+%settings_replace /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes
+%settings_replace /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
+
+%triggerin -- plasma-desktop
+
+%settings_replace /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRepresentation.qml.qubes
 
 %changelog
 @CHANGELOG@

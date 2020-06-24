@@ -1,3 +1,1 @@
-RPM_SPEC_FILES.dom0 = qubes-kde-dom0.spec
-
-RPM_SPEC_FILES := $(RPM_SPEC_FILES.$(PACKAGE_SET))
+RPM_SPEC_FILES = kde-settings-qubes.spec

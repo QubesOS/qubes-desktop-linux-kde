@@ -1,5 +1,5 @@
-Name:    qubes-kde-dom0
-Summary: Metapackage for installing all KDE components needed for Qubes Dom0
+Name:    kde-settings-qubes
+Summary: Package for installing all KDE components and settings needed for Qubes GuiVM
 Version: @VERSION@
 Release: @REL@%{?dist}
 
@@ -25,9 +25,10 @@ Requires: plasma-workspace-libs
 Requires: sddm
 Requires: sddm-breeze
 
-# Drop previous Qubes package
+# Drop previous Qubes packages
 Requires: kde-baseapps > 16.08.3
 Conflicts: kde-baseapps = 2000:16.08.3
+Obsoletes: qubes-kde-Dom0 <= 5.12.3
 
 # other 3rd party packages that are useful in Dom0
 

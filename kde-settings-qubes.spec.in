@@ -8,6 +8,8 @@ URL: http://qubes-os.org
 
 BuildArch: noarch
 
+BuildRequires: make
+
 Requires: qubes-desktop-linux-common
 Requires: qubes-artwork
 Requires: kde-filesystem

@@ -1,0 +1,8 @@
+host:
+  rpm:
+    spec:
+    - kde-settings-qubes.spec
+vm:
+  rpm:
+    spec:
+    - kde-settings-qubes.spec

@@ -20,11 +20,10 @@ wallpaperplugin=org.kde.image
 
 [Containments][1][Applets][2]
 immutability=1
-plugin=org.kde.plasma.kickoff
+plugin=org.kde.plasma.quicklauncher
 
 [Containments][1][Applets][2][Configuration][General]
-favorites=systemsettings.desktop,qubes-manager.desktop
-icon=start-here-qubes
+launcherUrls=file:///usr/share/applications/open-qubes-app-menu.desktop
 
 [Containments][1][Applets][2][Configuration][Shortcuts]
 global=Alt+F1
@@ -93,6 +92,4 @@ plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
 [Containments][7][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/Qubes_Steel/contents/images/2048x1536.png
-height=1620
-width=2880
+Image=file:///usr/share/wallpapers/Qubes_Steel

@@ -78,7 +78,6 @@ Qubes colorful frames for Breeze plasma theme.
 %{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
 %{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/10-qubes.js
 %{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/qubes-systray.js
-%{_datadir}/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRepresentation.qml.qubes
 %{_datadir}/kde-settings/kde-profile/default/share/applications/Thunar.desktop
 %{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/Help.desktop
 %{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/knetattach.desktop
@@ -116,9 +115,14 @@ sed -i 's|XDG_MENU_PREFIX="kf5-"|XDG_MENU_PREFIX="kf5-qubes-"|g' /etc/xdg/plasma
 %settings_replace /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes
 %settings_replace /usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
 
-%triggerin -- plasma-desktop
-
-%settings_replace /usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRepresentation.qml.qubes
+%post
+# it used to be replaced, but now is back to default content - restore it on
+# update
+configfile=/usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRepresentation.qml
+backupfile=${configfile}.kde
+if [ -r "$backupfile" ]; then
+    mv -f "$backupfile" "$configfile"
+fi
 
 %changelog
 @CHANGELOG@

@@ -29,8 +29,6 @@ install:
 	install -D -m 0644 plasmoidsetupscripts/template.js $(DESTDIR)/usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes
 	install -D -m 0644 plasmoidsetupscripts/template.js $(DESTDIR)/usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
 
-	install -D -m 0644 FullRepresentation.qml $(DESTDIR)/usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRepresentation.qml.qubes
-
 clean:
 	rm -rf debian/changelog.*
 	rm -rf pkgs

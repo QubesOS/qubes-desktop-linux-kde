@@ -18,6 +18,7 @@ Requires: kde-runtime-flags
 Requires: kde-runtime-libs
 Requires: kde-settings
 Requires: kdelibs
+Requires: kdeplasma-addons
 Requires: kscreen
 Requires: ksysguardd
 Requires: oxygen-cursor-themes

@@ -12,6 +12,7 @@ BuildRequires: make
 
 Requires: qubes-desktop-linux-common
 Requires: qubes-artwork
+Requires: kde-gtk-config
 Requires: kde-filesystem
 Requires: kde-runtime
 Requires: kde-runtime-flags
@@ -123,6 +124,23 @@ configfile=/usr/share/plasma/plasmoids/org.kde.plasma.kickoff/contents/ui/FullRe
 backupfile=${configfile}.kde
 if [ -r "$backupfile" ]; then
     mv -f "$backupfile" "$configfile"
+fi
+
+touch --no-create %{_kde4_iconsdir}/hicolor ||:
+touch --no-create %{_kde4_iconsdir}/breeze ||:
+
+%posttrans
+gtk-update-icon-cache --quiet %{_kde4_iconsdir}/hicolor ||:
+gtk-update-icon-cache --quiet %{_kde4_iconsdir}/breeze ||:
+update-desktop-database -q ||:
+
+%postun
+if [ $1 -eq 0 ] ; then
+  touch --no-create %{_kde4_iconsdir}/hicolor ||:
+  touch --no-create %{_kde4_iconsdir}/breeze ||:
+  gtk-update-icon-cache --quiet %{_kde4_iconsdir}/hicolor ||:
+  gtk-update-icon-cache --quiet %{_kde4_iconsdir}/breeze ||:
+  update-desktop-database -q ||:
 fi
 
 %changelog

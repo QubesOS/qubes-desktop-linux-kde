@@ -77,7 +77,7 @@ Qubes colorful frames for Breeze plasma theme.
 %{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kicker.js.qubes
 %{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes
 %{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
-%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/10-qubes.js
+%{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/11-qubes.js
 %{_datadir}/plasma/shells/org.kde.plasma.desktop/contents/updates/qubes-systray.js
 %{_datadir}/kde-settings/kde-profile/default/share/applications/Thunar.desktop
 %{_datadir}/kde-settings/kde-profile/default/share/applications/kde4/Help.desktop

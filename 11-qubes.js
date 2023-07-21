@@ -1,5 +1,4 @@
 /* replace the default kickoff with Qubes menu */
-var panels = panels()
 for (var i in panelIds) {
 	var panel = panelById(panelIds[i])
 	var widgetIds = panel.widgetIds

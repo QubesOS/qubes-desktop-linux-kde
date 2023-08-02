@@ -1,0 +1,17 @@
+--- /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js.orig	2023-08-03 01:11:03.210000000 +0200
++++ /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js	2023-08-03 01:11:33.814000000 +0200
+@@ -21,9 +21,11 @@
+     }
+ }
+ 
+-var kickoff = panel.addWidget("org.kde.plasma.kickoff")
+-kickoff.currentConfigGroup = ["Shortcuts"]
+-kickoff.writeConfig("global", "Alt+F1")
++var qubesMenu = panel.addWidget('org.kde.plasma.quicklaunch')
++qubesMenu.currentConfigGroup = ['General']
++qubesMenu.writeConfig('launcherUrls', ['file:///usr/share/applications/open-qubes-app-menu.desktop'])
++qubesMenu.currentConfigGroup = ["Shortcuts"]
++qubesMenu.writeConfig("global", "Alt+F1")
+ 
+ //panel.addWidget("org.kde.plasma.showActivityManager")
+ panel.addWidget("org.kde.plasma.pager")

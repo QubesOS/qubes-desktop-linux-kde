@@ -7,6 +7,7 @@ install:
 	install -D -m 0644 qubes-generate-color-palette.desktop $(DESTDIR)/etc/xdg/autostart/qubes-generate-color-palette.desktop
 	install -D -m 0644 11-qubes.js $(DESTDIR)/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/11-qubes.js
 	install -D -m 0644 qubes-systray.js $(DESTDIR)/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/qubes-systray.js
+	install -D -m 0644 kde-panel-layout.patch $(DESTDIR)/usr/share/qubes/kde-panel-layout.patch
 
 	install -D -m 0644 applications/kde4/nepomukbackup.desktop $(DESTDIR)/usr/share/kde-settings/kde-profile/default/share/applications/kde4/nepomukbackup.desktop
 	install -D -m 0644 applications/kde4/nepomukcontroller.desktop $(DESTDIR)/usr/share/kde-settings/kde-profile/default/share/applications/kde4/nepomukcontroller.desktop

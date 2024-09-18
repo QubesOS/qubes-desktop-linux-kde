@@ -34,12 +34,6 @@ Requires: kde-baseapps > 16.08.3
 Conflicts: kde-baseapps = 2000:16.08.3
 Obsoletes: qubes-kde-Dom0 <= 5.12.3
 
-# other 3rd party packages that are useful in Dom0
-
-# The konsole really looks awful without those fonts:
-Requires: dejavu-sans-mono-fonts
-Requires: dejavu-sans-fonts
-
 # Qubes-customized menus
 Requires: qubes-menus
 

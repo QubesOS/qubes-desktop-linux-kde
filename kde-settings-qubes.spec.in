@@ -21,7 +21,6 @@ Requires: kde-settings
 Requires: kdelibs
 Requires: kdeplasma-addons
 Requires: kscreen
-Requires: ksysguardd
 Requires: oxygen-cursor-themes
 Requires: oxygen-icon-theme
 Requires: plasma-workspace

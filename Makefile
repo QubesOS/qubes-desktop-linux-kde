@@ -29,6 +29,8 @@ install:
 	install -D -m 0644 plasmoidsetupscripts/template.js $(DESTDIR)/usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kicker.js.qubes
 	install -D -m 0644 plasmoidsetupscripts/template.js $(DESTDIR)/usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes
 	install -D -m 0644 plasmoidsetupscripts/template.js $(DESTDIR)/usr/share/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickoff.js.qubes
+	install -D -m 0644 config/10-gui-daemon-shmoverride.conf \
+		$(DESTDIR)/usr/lib/systemd/user/plasma-kwin_wayland.service.d/10-gui-daemon-shmoverride.conf
 
 clean:
 	rm -rf debian/changelog.*

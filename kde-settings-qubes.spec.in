@@ -87,6 +87,7 @@ Qubes colorful frames for Breeze plasma theme.
 %{_datadir}/kde-settings/kde-profile/default/share/config/klipperrc
 %{_datadir}/kde-settings/kde-profile/default/share/config/nepomukserverrc
 %{_datadir}/kde-settings/kde-profile/default/share/kde4/services/kcm_nepomuk.desktop
+/usr/lib/systemd/user/plasma-kwin_wayland.service.d/10-gui-daemon-shmoverride.conf
 
 %files -n plasma-breeze-qubes
 /usr/bin/qubes-generate-color-palette

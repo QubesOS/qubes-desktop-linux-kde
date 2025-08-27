@@ -3,6 +3,7 @@ install:
 	install -D -m 0644 kickoffrc $(DESTDIR)/etc/skel/.kde/share/config/kickoffrc
 	install -D -m 0644 kscreensaverrc $(DESTDIR)/etc/skel/.kde/share/config/kscreensaverrc
 	install -D -m 0644 plasma-org.kde.plasma.desktop-appletsrc $(DESTDIR)/etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+	install -D -m 0644 kwinrc $(DESTDIR)/etc/skel/.config/kwinrc
 	install -D -m 0755 qubes-generate-color-palette $(DESTDIR)/usr/bin/qubes-generate-color-palette
 	install -D -m 0644 qubes-generate-color-palette.desktop $(DESTDIR)/etc/xdg/autostart/qubes-generate-color-palette.desktop
 	install -D -m 0644 11-qubes.js $(DESTDIR)/usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/11-qubes.js

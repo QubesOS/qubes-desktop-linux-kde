@@ -67,6 +67,7 @@ Qubes colorful frames for Breeze plasma theme.
 %{_sysconfdir}/skel/.kde/share/config/kickoffrc
 %{_sysconfdir}/skel/.kde/share/config/kscreensaverrc
 %{_sysconfdir}/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+%{_sysconfdir}/skel/.config/kwinrc
 %{_datadir}/qubes/kde-panel-layout.patch
 %{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kicker.js.qubes
 %{_datadir}/plasma/look-and-feel/org.fedoraproject.fedora.desktop/contents/plasmoidsetupscripts/org.kde.plasma.kickerdash.js.qubes

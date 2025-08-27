@@ -26,6 +26,7 @@ Requires: plasma-workspace
 Requires: plasma-workspace-libs
 Requires: sddm
 Requires: sddm-breeze
+Requires(pre): patch
 
 # Drop previous Qubes packages
 Requires: kde-baseapps > 16.08.3

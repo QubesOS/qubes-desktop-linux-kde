@@ -24,6 +24,7 @@ Requires: oxygen-cursor-themes
 Requires: oxygen-icon-theme
 Requires: plasma-workspace
 Requires: plasma-workspace-libs
+Requires: plasma-workspace-x11
 Requires: sddm
 Requires: sddm-breeze
 
